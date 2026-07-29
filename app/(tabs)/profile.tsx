@@ -80,8 +80,11 @@ export default function ProfileScreen() {
         throw error;
       }
 
-      // Refresh store so dashboard and other screens see the new name immediately
-      await fetchProfile();
+      // Update the store immediately so the dashboard re-renders with the new name
+      setProfile({
+        ...(profile ?? { id: session.user.id, preferred_language: '' }),
+        ...updates,
+      });
       showToast('Profile saved!', 'success');
     } catch (error) {
       if (error instanceof Error) {

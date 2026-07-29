@@ -31,7 +31,6 @@ yarn-error.*
 # local env files
 .env*.local
 .env
-env
 
 # eas.json is intentionally NOT gitignored so local builds can find it.
 # Use EAS Secrets (eas secret:create) instead of putting real values here
