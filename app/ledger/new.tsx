@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { AppImagePicker } from '@/components/ui/ImagePicker';
 import { useCreateTransaction, uploadReceipt } from '@/lib/api/transactions';
+import { analyzeReceiptImage } from '@/lib/api/vision';
 import { useCrops } from '@/lib/api/crops';
 import { useStore } from '@/lib/store';
 import { ArrowLeft } from 'lucide-react-native';
@@ -54,8 +55,9 @@ export default function AddTransactionScreen() {
   const [receiptBase64, setReceiptBase64] = useState<string | null>(null);
   const [receiptUri, setReceiptUri] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  const { control, handleSubmit, formState: { errors }, watch } = useForm<TransactionFormData>({
+  const { control, handleSubmit, formState: { errors }, watch, setValue } = useForm<TransactionFormData>({
     resolver: zodResolver(transactionSchema),
     defaultValues: {
       type: 'expense',
@@ -126,19 +128,23 @@ export default function AddTransactionScreen() {
               control={control}
               name="type"
               render={({ field: { onChange, value } }) => (
-                <View className="flex-row mb-6 bg-sand rounded-xl p-1">
-                  <Button 
-                    label="Expense" 
-                    onPress={() => onChange('expense')}
-                    className={`flex-1 min-h-[40px] rounded-lg ${value === 'expense' ? 'bg-clay shadow-sm' : 'bg-transparent'}`}
-                    variant={value === 'expense' ? 'danger' : 'secondary'}
-                  />
-                  <Button 
-                    label="Income" 
-                    onPress={() => onChange('income')}
-                    className={`flex-1 min-h-[40px] rounded-lg ${value === 'income' ? 'bg-leaf shadow-sm' : 'bg-transparent'}`}
-                    variant={value === 'income' ? 'primary' : 'secondary'}
-                  />
+                <View className="flex-row w-full mb-6 bg-sand rounded-xl p-1 gap-1">
+                  <View className="flex-1">
+                    <Button 
+                      label="Expense" 
+                      onPress={() => onChange('expense')}
+                      className={`w-full min-h-[40px] rounded-lg ${value === 'expense' ? 'bg-clay shadow-sm' : 'bg-transparent'}`}
+                      variant={value === 'expense' ? 'danger' : 'secondary'}
+                    />
+                  </View>
+                  <View className="flex-1">
+                    <Button 
+                      label="Income" 
+                      onPress={() => onChange('income')}
+                      className={`w-full min-h-[40px] rounded-lg ${value === 'income' ? 'bg-leaf shadow-sm' : 'bg-transparent'}`}
+                      variant={value === 'income' ? 'primary' : 'secondary'}
+                    />
+                  </View>
                 </View>
               )}
             />
@@ -222,15 +228,36 @@ export default function AddTransactionScreen() {
             <AppImagePicker
               label="Receipt Photo (Optional)"
               value={receiptUri || undefined}
-              onImageSelected={(base64, uri) => {
+              onImageSelected={async (base64, uri) => {
                 setReceiptBase64(base64);
                 setReceiptUri(uri);
+                
+                if (base64) {
+                  try {
+                    setIsAnalyzing(true);
+                    showToast('Analyzing receipt...', 'success');
+                    const details = await analyzeReceiptImage(base64);
+                    
+                    if (details.type) setValue('type', details.type);
+                    if (details.category) setValue('category', details.category);
+                    if (details.amount) setValue('amount', details.amount);
+                    if (details.transaction_date) setValue('transaction_date', details.transaction_date);
+                    if (details.description) setValue('description', details.description);
+                    
+                    showToast('Form auto-filled from receipt', 'success');
+                  } catch (e) {
+                    console.error(e);
+                    showToast('Failed to analyze receipt', 'error');
+                  } finally {
+                    setIsAnalyzing(false);
+                  }
+                }
               }}
               onImageRemoved={() => {
                 setReceiptBase64(null);
                 setReceiptUri(null);
               }}
-              isUploading={isUploading}
+              isUploading={isUploading || isAnalyzing}
             />
 
             <Button 

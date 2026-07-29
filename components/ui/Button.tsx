@@ -23,7 +23,8 @@ export function Button({
     transform: [{ scale: scale.value }],
   }));
 
-  const baseStyle = 'min-h-[48px] flex-row items-center justify-center rounded-xl px-4 py-3';
+  const isIconOnly = !label;
+  const baseStyle = `min-h-[48px] flex-row items-center justify-center rounded-xl ${isIconOnly ? '' : 'px-4 py-3'}`;
 
   const variants = {
     primary: 'bg-leaf active:bg-leaf-dark',
@@ -45,7 +46,7 @@ export function Button({
         disabled={disabled}
         accessible={true}
         accessibilityRole="button"
-        accessibilityLabel={label}
+        accessibilityLabel={label || "Button"}
         onPressIn={(e) => {
           if (!disabled) scale.value = withSpring(0.96, { damping: 15, stiffness: 400 });
           onPressInProp?.(e);
@@ -57,12 +58,14 @@ export function Button({
         {...props}
       >
         {icon && <>{icon}</>}
-        <Text
-          className={`${textColors[variant]} font-medium ${icon ? 'ml-2' : ''}`}
-          style={{ fontFamily: 'Inter-Medium', fontSize: 16 }}
-        >
-          {label}
-        </Text>
+        {!!label && (
+          <Text
+            className={`${textColors[variant]} font-medium ${icon ? 'ml-2' : ''}`}
+            style={{ fontFamily: 'Inter-Medium', fontSize: 16 }}
+          >
+            {label}
+          </Text>
+        )}
       </TouchableOpacity>
     </Animated.View>
   );

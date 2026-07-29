@@ -198,7 +198,8 @@ Rules:
 2. Provide practical, actionable farming advice.
 3. Use markdown formatting to make your responses readable (e.g., bullet points, bold text).
 4. Do not offer financial or legal advice.
-5. Keep responses concise but informative.`;
+5. Keep responses concise but informative.
+6. Language Matching: Reply in the EXACT language and script the user uses. If they use English, reply in English. If they use Hindi (Devanagari), reply in Hindi. CRITICALLY: If the user types in "Hinglish" (Hindi words written in the English alphabet/Roman script), you MUST reply in Hinglish. NEVER reply in Devanagari script if the user used Hinglish.`;
 
       // 3. Call Gemini via REST (fetch — no native dependencies)
       const aiResponse = await callGemini({
