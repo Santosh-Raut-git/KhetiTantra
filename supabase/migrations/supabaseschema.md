@@ -14,6 +14,7 @@ create table public.profiles (
   district text,
   land_area_acres numeric,
   preferred_language text default 'en',
+  is_admin boolean default false,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
@@ -31,6 +32,23 @@ $$ language plpgsql security definer;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
+
+-- Trigger to prevent unauthorized users from escalating their own privileges
+create or replace function public.prevent_is_admin_update()
+returns trigger as $$
+begin
+  if new.is_admin is distinct from old.is_admin then
+    if current_setting('request.jwt.claim.role', true) = 'authenticated' then
+      new.is_admin = old.is_admin;
+    end if;
+  end if;
+  return new;
+end;
+$$ language plpgsql security definer;
+
+create trigger check_is_admin_update
+  before update on public.profiles
+  for each row execute procedure public.prevent_is_admin_update();
 
 
 -- 2. CROPS TABLE

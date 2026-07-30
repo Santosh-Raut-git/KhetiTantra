@@ -2,7 +2,7 @@ import { View, Text, ScrollView, Pressable, Alert, ActivityIndicator, RefreshCon
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAdminUsers, useDeleteUserAdmin, AdminUser } from '@/lib/api/admin';
 import { Card } from '@/components/ui/Card';
-import { User, MapPin, Phone, Trash2, Sprout } from 'lucide-react-native';
+import { User, MapPin, Phone, Trash2, Sprout, Globe } from 'lucide-react-native';
 
 export default function AdminUsersScreen() {
   const { data: users, isLoading, refetch } = useAdminUsers();
@@ -91,10 +91,18 @@ export default function AdminUsersScreen() {
                           </View>
                         )}
                         {user.land_area_acres && (
-                          <View className="flex-row items-center">
+                          <View className="flex-row items-center mr-3">
                             <Sprout size={12} color="#6D4C41" />
                             <Text className="text-soil-muted text-xs ml-1" style={{ fontFamily: 'Inter-Regular' }}>
                               {user.land_area_acres} acres
+                            </Text>
+                          </View>
+                        )}
+                        {user.preferred_language && (
+                          <View className="flex-row items-center">
+                            <Globe size={12} color="#6D4C41" />
+                            <Text className="text-soil-muted text-xs ml-1 capitalize" style={{ fontFamily: 'Inter-Regular' }}>
+                              {user.preferred_language}
                             </Text>
                           </View>
                         )}

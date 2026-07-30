@@ -2,13 +2,21 @@ import { View, Text, ScrollView, Pressable, RefreshControl } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Card } from '@/components/ui/Card';
-import { useAdminStats } from '@/lib/api/admin';
+import { useAdminStats, useAdminTransactions } from '@/lib/api/admin';
 import { Shield, Users, Sprout, Wallet, TrendingUp, TrendingDown, ArrowLeft } from 'lucide-react-native';
 import { Button } from '@/components/ui/Button';
 
 export default function AdminDashboardScreen() {
   const router = useRouter();
   const { data: stats, isLoading, refetch } = useAdminStats();
+  const { data: transactions, refetch: refetchTx } = useAdminTransactions();
+  
+  const recentActivity = transactions?.slice(0, 5) || [];
+  
+  const onRefresh = () => {
+    refetch();
+    refetchTx();
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-sand" edges={['top']}>
@@ -39,7 +47,7 @@ export default function AdminDashboardScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerClassName="p-5 pb-8 md:max-w-3xl md:w-full md:self-center md:py-10"
         refreshControl={
-          <RefreshControl refreshing={false} onRefresh={() => refetch()} colors={['#2E7D32']} />
+          <RefreshControl refreshing={false} onRefresh={onRefresh} colors={['#2E7D32']} />
         }
       >
         <Text className="text-soil text-lg font-bold mb-3" style={{ fontFamily: 'Inter-Bold' }}>
@@ -130,6 +138,52 @@ export default function AdminDashboardScreen() {
             </Text>
           </View>
         </Card>
+
+        {recentActivity.length > 0 && (
+          <>
+            <Text className="text-soil text-lg font-bold mb-3 mt-4" style={{ fontFamily: 'Inter-Bold' }}>
+              Recent Activity
+            </Text>
+            <View className="gap-3">
+              {recentActivity.map((tx) => (
+                <Card key={tx.id} className="p-3">
+                  <View className="flex-row items-center justify-between">
+                    <View className="flex-row items-center flex-1">
+                      <View className={`w-10 h-10 rounded-full items-center justify-center mr-3 ${tx.type === 'income' ? 'bg-leaf/10' : 'bg-clay/10'}`}>
+                        {tx.type === 'income' ? <TrendingUp size={18} color="#2E7D32" /> : <TrendingDown size={18} color="#D32F2F" />}
+                      </View>
+                      <View className="flex-1">
+                        <Text className="text-soil text-sm font-bold" style={{ fontFamily: 'Inter-Bold' }}>
+                          {tx.profiles?.full_name || 'Unknown User'}
+                        </Text>
+                        <Text className="text-soil-muted text-xs" style={{ fontFamily: 'Inter-Medium' }}>
+                          {tx.category} • {tx.crops?.crop_name || 'General'}
+                        </Text>
+                      </View>
+                    </View>
+                    <View className="items-end">
+                      <Text 
+                        className={`text-sm font-bold ${tx.type === 'income' ? 'text-leaf' : 'text-clay'}`} 
+                        style={{ fontFamily: 'Inter-Bold' }}
+                      >
+                        {tx.type === 'income' ? '+' : '-'}₹{tx.amount.toLocaleString('en-IN')}
+                      </Text>
+                      <Text className="text-soil-muted text-[10px]" style={{ fontFamily: 'Inter-Regular' }}>
+                        {tx.transaction_date}
+                      </Text>
+                    </View>
+                  </View>
+                </Card>
+              ))}
+            </View>
+            <Button
+              label="View All Transactions"
+              variant="secondary"
+              onPress={() => router.push('/admin/transactions')}
+              className="mt-4 border border-soil/10 bg-transparent"
+            />
+          </>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
