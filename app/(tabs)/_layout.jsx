@@ -1,5 +1,5 @@
 import { Tabs, Redirect, Slot, usePathname } from 'expo-router';
-import { House, Wallet, Bot, User, Sprout } from 'lucide-react-native';
+import { House, Wallet, Bot, User, Sprout, Store, ShoppingCart, Package, Users } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/lib/theme';
 import { useStore } from '@/lib/store';
@@ -13,19 +13,22 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 
-const NAV_ITEMS = [
+const FARMER_NAV_ITEMS = [
   { name: 'index', title: 'Dashboard', Icon: House, href: '/(tabs)' },
   { name: 'crops', title: 'Crops', Icon: Sprout, href: '/(tabs)/crops' },
   { name: 'ledger', title: 'Ledger', Icon: Wallet, href: '/(tabs)/ledger' },
-  {
-    name: 'assistant',
-    title: 'AI Assistant',
-    Icon: Bot,
-    href: '/(tabs)/assistant',
-  },
+  { name: 'assistant', title: 'AI Assistant', Icon: Bot, href: '/(tabs)/assistant' },
   { name: 'profile', title: 'Profile', Icon: User, href: '/(tabs)/profile' },
 ];
-function WebSidebar() {
+
+const RETAILER_NAV_ITEMS = [
+  { name: 'marketplace', title: 'Marketplace', Icon: Store, href: '/(tabs)/marketplace' },
+  { name: 'orders', title: 'Orders', Icon: Package, href: '/(tabs)/orders' },
+  { name: 'network', title: 'Network', Icon: Users, href: '/(tabs)/network' },
+  { name: 'assistant', title: 'AI Assistant', Icon: Bot, href: '/(tabs)/assistant' },
+  { name: 'profile', title: 'Profile', Icon: User, href: '/(tabs)/profile' },
+];
+function WebSidebar({ role }) {
   const pathname = usePathname();
   const router = useRouter();
   const getIsActive = (name) => {
@@ -84,7 +87,7 @@ function WebSidebar() {
 
       {/* Nav Items */}
       <View style={{ paddingTop: 16, paddingHorizontal: 12, flex: 1 }}>
-        {NAV_ITEMS.map(({ name, title, Icon, href }) => {
+        {(role === 'retailer' ? RETAILER_NAV_ITEMS : FARMER_NAV_ITEMS).map(({ name, title, Icon, href }) => {
           const active = getIsActive(name);
           return (
             <Pressable
@@ -166,7 +169,11 @@ export default function TabLayout() {
   if (!isLoading && !session) {
     return <Redirect href="/(auth)/login" />;
   }
+  
+  const role = session?.user?.user_metadata?.role || 'farmer';
+  const isRetailer = role === 'retailer';
   const isWideWeb = Platform.OS === 'web' && width >= 768;
+
   if (isWideWeb) {
     return (
       <View
@@ -176,7 +183,7 @@ export default function TabLayout() {
           backgroundColor: theme.colors.background,
         }}
       >
-        <WebSidebar />
+        <WebSidebar role={role} />
         <View style={{ flex: 1 }}>
           <Slot />
         </View>
@@ -206,51 +213,75 @@ export default function TabLayout() {
         },
       }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Dashboard',
-          tabBarIcon: ({ color, size }) => (
-            <House color={color} size={size} strokeWidth={2} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="crops"
-        options={{
-          title: 'Crops',
-          tabBarIcon: ({ color, size }) => (
-            <Sprout color={color} size={size} strokeWidth={2} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="ledger"
-        options={{
-          title: 'Ledger',
-          tabBarIcon: ({ color, size }) => (
-            <Wallet color={color} size={size} strokeWidth={2} />
-          ),
-        }}
-      />
+      {/* Farmer Tabs */}
+      {!isRetailer && (
+        <Tabs.Screen
+          name="index"
+          options={{ title: 'Dashboard', tabBarIcon: ({ color, size }) => <House color={color} size={size} strokeWidth={2} /> }}
+        />
+      )}
+      {!isRetailer && (
+        <Tabs.Screen
+          name="crops"
+          options={{ title: 'Crops', tabBarIcon: ({ color, size }) => <Sprout color={color} size={size} strokeWidth={2} /> }}
+        />
+      )}
+      {!isRetailer && (
+        <Tabs.Screen
+          name="ledger"
+          options={{ title: 'Ledger', tabBarIcon: ({ color, size }) => <Wallet color={color} size={size} strokeWidth={2} /> }}
+        />
+      )}
+
+      {/* Retailer Tabs */}
+      {isRetailer && (
+        <Tabs.Screen
+          name="marketplace"
+          options={{ title: 'Marketplace', tabBarIcon: ({ color, size }) => <Store color={color} size={size} strokeWidth={2} /> }}
+        />
+      )}
+      {isRetailer && (
+        <Tabs.Screen
+          name="orders"
+          options={{ title: 'Orders', tabBarIcon: ({ color, size }) => <Package color={color} size={size} strokeWidth={2} /> }}
+        />
+      )}
+      {isRetailer && (
+        <Tabs.Screen
+          name="network"
+          options={{ title: 'Network', tabBarIcon: ({ color, size }) => <Users color={color} size={size} strokeWidth={2} /> }}
+        />
+      )}
+
+      {/* Shared Tabs */}
       <Tabs.Screen
         name="assistant"
-        options={{
-          title: 'AI Assistant',
-          tabBarIcon: ({ color, size }) => (
-            <Bot color={color} size={size} strokeWidth={2} />
-          ),
-        }}
+        options={{ title: 'AI Assistant', tabBarIcon: ({ color, size }) => <Bot color={color} size={size} strokeWidth={2} /> }}
       />
       <Tabs.Screen
         name="profile"
-        options={{
-          title: 'Profile',
-          tabBarIcon: ({ color, size }) => (
-            <User color={color} size={size} strokeWidth={2} />
-          ),
-        }}
+        options={{ title: 'Profile', tabBarIcon: ({ color, size }) => <User color={color} size={size} strokeWidth={2} /> }}
       />
+
+      {/* Hide unused routes from the tab bar entirely */}
+      {isRetailer && (
+        <Tabs.Screen name="index" options={{ href: null }} />
+      )}
+      {isRetailer && (
+        <Tabs.Screen name="crops" options={{ href: null }} />
+      )}
+      {isRetailer && (
+        <Tabs.Screen name="ledger" options={{ href: null }} />
+      )}
+      {!isRetailer && (
+        <Tabs.Screen name="marketplace" options={{ href: null }} />
+      )}
+      {!isRetailer && (
+        <Tabs.Screen name="orders" options={{ href: null }} />
+      )}
+      {!isRetailer && (
+        <Tabs.Screen name="network" options={{ href: null }} />
+      )}
     </Tabs>
   );
 }

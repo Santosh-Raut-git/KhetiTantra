@@ -20,7 +20,12 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
+import { useStore } from '@/lib/store';
 export default function AssistantScreen() {
+  const { profile, session } = useStore();
+  const rawRole = profile?.role || session?.user?.user_metadata?.role || 'farmer';
+  const isRetailer = rawRole === 'retailer';
+
   const [inputText, setInputText] = useState('');
   const flatListRef = useRef(null);
   const {
@@ -120,7 +125,7 @@ export default function AssistantScreen() {
             className="text-soil-muted text-xs"
             style={{ fontFamily: 'Inter-Medium' }}
           >
-            Your personal agronomist
+            {isRetailer ? 'Your business analyst' : 'Your personal agronomist'}
           </Text>
         </View>
       </View>
@@ -182,8 +187,9 @@ export default function AssistantScreen() {
                   className="text-soil-muted text-center mt-2"
                   style={{ fontFamily: 'Inter-Regular' }}
                 >
-                  Ask me about crop diseases, fertilizers, or general farming
-                  advice.
+                  {isRetailer 
+                    ? 'Ask me about market prices, crop availability, or supply chain logistics.' 
+                    : 'Ask me about crop diseases, fertilizers, or general farming advice.'}
                 </Text>
               </View>
             )}

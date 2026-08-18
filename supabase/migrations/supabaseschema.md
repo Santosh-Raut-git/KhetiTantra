@@ -15,6 +15,7 @@ create table public.profiles (
   land_area_acres numeric,
   preferred_language text default 'en',
   is_admin boolean default false,
+  role text default 'farmer' check (role in ('farmer', 'retailer')),
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
@@ -23,8 +24,12 @@ create table public.profiles (
 create function public.handle_new_user()
 returns trigger as $$
 begin
-  insert into public.profiles (id, full_name)
-  values (new.id, new.raw_user_meta_data->>'full_name');
+  insert into public.profiles (id, full_name, role)
+  values (
+    new.id, 
+    new.raw_user_meta_data->>'full_name',
+    coalesce(new.raw_user_meta_data->>'role', 'farmer')
+  );
   return new;
 end;
 $$ language plpgsql security definer;

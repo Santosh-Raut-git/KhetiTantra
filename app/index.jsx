@@ -18,8 +18,8 @@ export default function Index() {
       </View>
     );
   }
-  if (session) {
-    return <Redirect href="/(tabs)" />;
+  if (!session) {
+    return <Redirect href="/(auth)" />;
   }
-  return <Redirect href="/(auth)/login" />;
+  return <Redirect href="/(tabs)" />;
 }
