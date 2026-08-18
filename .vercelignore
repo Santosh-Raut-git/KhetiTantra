@@ -12,9 +12,6 @@ android/
 # Expo temp files
 .expo/
 
-# Bolt.new scaffolding
-.bolt/
-
 # Documentation files (not needed for deployment)
 *.pdf
 *.docx

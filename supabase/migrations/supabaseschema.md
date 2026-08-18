@@ -1,6 +1,6 @@
 # KhetiTantra Supabase Schema
 
-To ensure the backend for KhetiTantra is perfectly set up and fully compatible with the React Native Expo app we built, run the following SQL query in the **SQL Editor** of your Supabase Dashboard. 
+To ensure the backend for KhetiTantra is perfectly set up and fully compatible with the React Native Expo app we built, run the following SQL query in the **SQL Editor** of your Supabase Dashboard.
 
 This script will set up all tables, triggers, views, storage buckets, and Row Level Security (RLS) policies required for the application.
 
