@@ -32,17 +32,19 @@
         "expo-build-properties",
         {
           "android": {
-            "buildArchs": ["arm64-v8a", "armeabi-v7a"],
+            "buildArchs": [
+              "arm64-v8a",
+              "armeabi-v7a"
+            ],
             "minSdkVersion": 24
           }
         }
       ]
     ],
-
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "e20c7631-27f9-40ca-a298-17e2c3f2eb2b"
+        "projectId": "8bbed22c-8e9e-4452-8591-9b48abf25873"
       }
     },
     "android": {
