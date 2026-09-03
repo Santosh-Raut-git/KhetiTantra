@@ -183,7 +183,7 @@ export default function AdminLayout() {
     );
   }
   if (!session) {
-    return <Redirect href="/(auth)/login" />;
+    return <Redirect href="/(auth)" />;
   }
   if (!isAdmin) {
     return (

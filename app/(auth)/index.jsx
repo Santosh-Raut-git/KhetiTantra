@@ -22,7 +22,8 @@ import Animated, {
   withTiming,
   Easing,
 } from 'react-native-reanimated';
-import { Sprout, Store, Mail, Lock, Headphones, Music, User } from 'lucide-react-native';
+import { Sprout, Store, Mail, Lock, Headphones, Music, User, AlertCircle } from 'lucide-react-native';
+import { useToast } from '@/components/ui/Toast';
 
 const PRIMARY_COLOR = '#2E7D32';
 const DARK_COLOR = '#1B5E20';
@@ -33,7 +34,9 @@ export default function UnifiedAuthScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  
+  const [authError, setAuthError] = useState('');
+
+  const { showToast } = useToast();
   const router = useRouter();
   const { width } = useWindowDimensions();
   const isWide = width >= 768;
@@ -43,6 +46,7 @@ export default function UnifiedAuthScreen() {
 
   const switchRole = (newRole) => {
     setRole(newRole);
+    setAuthError('');
     const target = newRole === 'farmer' ? 0 : 1;
     animProgress.value = withSpring(target, {
       damping: 25,
@@ -51,42 +55,64 @@ export default function UnifiedAuthScreen() {
   };
 
   async function handleAuth() {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
+    setAuthError('');
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail || !password) {
+      const msg = 'Please enter both email and password';
+      setAuthError(msg);
+      showToast(msg, 'error');
       return;
     }
     setLoading(true);
 
-    if (!isSignUp) {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        Alert.alert('Login Failed', error.message);
-      } else {
-        router.replace('/(tabs)');
-      }
-    } else {
-      if (password.length < 8) {
-        Alert.alert('Error', 'Password must be at least 8 characters long');
-        setLoading(false);
-        return;
-      }
-      const { error } = await supabase.auth.signUp({ 
-        email, 
-        password,
-        options: {
-          data: {
-            role: role // 'farmer' or 'retailer'
+    try {
+      if (!isSignUp) {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: trimmedEmail,
+          password,
+        });
+        if (error) {
+          let userMsg = error.message;
+          if (error.message.toLowerCase().includes('invalid login credentials')) {
+            userMsg = 'Invalid email or password. If you do not have an account yet, switch to "Sign Up" below.';
           }
+          setAuthError(userMsg);
+          showToast(userMsg, 'error');
+        } else {
+          router.replace('/(tabs)');
         }
-      });
-      if (error) {
-        Alert.alert('Signup Failed', error.message);
       } else {
-        Alert.alert('Success', 'Account created successfully!');
-        router.replace('/(tabs)');
+        if (password.length < 8) {
+          const msg = 'Password must be at least 8 characters long';
+          setAuthError(msg);
+          showToast(msg, 'error');
+          setLoading(false);
+          return;
+        }
+        const { error } = await supabase.auth.signUp({
+          email: trimmedEmail,
+          password,
+          options: {
+            data: {
+              role: role, // 'farmer' or 'retailer'
+            },
+          },
+        });
+        if (error) {
+          setAuthError(error.message);
+          showToast(error.message, 'error');
+        } else {
+          showToast('Account created successfully!', 'success');
+          router.replace('/(tabs)');
+        }
       }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'An unexpected error occurred';
+      setAuthError(msg);
+      showToast(msg, 'error');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   // -- Animations --
@@ -162,24 +188,57 @@ export default function UnifiedAuthScreen() {
         className="justify-center px-8"
         style={{ width: isWide ? '100%' : containerWidth, height: isWide ? 500 : 400 }}
       >
-        <View className="flex-row mb-8">
+        <View className="flex-row mb-6">
           <Text className="text-soil-muted" style={{ fontFamily: 'Inter-Regular' }}>
             {!isSignUp ? "Don't have an account? " : "Already have an account? "}
           </Text>
-          <Pressable onPress={() => setIsSignUp(!isSignUp)}>
+          <Pressable onPress={() => { setIsSignUp(!isSignUp); setAuthError(''); }}>
             <Text style={{ color: PRIMARY_COLOR, fontFamily: 'Inter-Bold' }}>
               {!isSignUp ? 'Sign Up.' : 'Sign In.'}
             </Text>
           </Pressable>
         </View>
 
+        {authError ? (
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: '#FEF2F2',
+              borderWidth: 1,
+              borderColor: '#FECACA',
+              borderRadius: 12,
+              paddingHorizontal: 12,
+              paddingVertical: 10,
+              marginBottom: 16,
+            }}
+          >
+            <AlertCircle size={18} color="#DC2626" style={{ marginRight: 8, flexShrink: 0 }} />
+            <Text
+              style={{
+                color: '#B91C1C',
+                fontSize: 13,
+                fontFamily: 'Inter-Medium',
+                flex: 1,
+                lineHeight: 18,
+              }}
+            >
+              {authError}
+            </Text>
+          </View>
+        ) : null}
+
         <View className="space-y-4">
           <Input
             label="Email"
             placeholder="youremail@example.com"
             value={email}
-            onChangeText={setEmail}
+            onChangeText={(text) => {
+              setEmail(text);
+              if (authError) setAuthError('');
+            }}
             autoCapitalize="none"
+            autoCorrect={false}
             keyboardType="email-address"
             className="bg-soil/5 border-0"
           />
@@ -187,7 +246,10 @@ export default function UnifiedAuthScreen() {
             label="Password"
             placeholder="••••••••"
             value={password}
-            onChangeText={setPassword}
+            onChangeText={(text) => {
+              setPassword(text);
+              if (authError) setAuthError('');
+            }}
             secureTextEntry
             className="bg-soil/5 border-0"
           />

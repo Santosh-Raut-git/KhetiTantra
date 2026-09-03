@@ -87,7 +87,12 @@ export default function ProfileScreen() {
   }
   async function signOut() {
     const { error } = await supabase.auth.signOut();
-    if (error) Alert.alert('Error', error.message);
+    if (error) {
+      Alert.alert('Error', error.message);
+    } else {
+      setProfile(null);
+      router.replace('/(auth)');
+    }
   }
   return (
     <SafeAreaView className="flex-1 bg-sand" edges={['top']}>

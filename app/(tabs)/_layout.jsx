@@ -167,7 +167,7 @@ export default function TabLayout() {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   if (!isLoading && !session) {
-    return <Redirect href="/(auth)/login" />;
+    return <Redirect href="/(auth)" />;
   }
   
   const role = session?.user?.user_metadata?.role || 'farmer';
