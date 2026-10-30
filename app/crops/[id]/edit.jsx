@@ -167,7 +167,7 @@ export default function EditCropScreen() {
   }
   return (
     <SafeAreaView className="flex-1 bg-sand" edges={['top']}>
-      <View className="flex-row items-center px-5 pt-4 pb-4 border-b border-soil/5">
+      <View className="flex-row items-center px-5 pt-4 pb-4 border-b border-soil/5 md:max-w-2xl md:w-full md:self-center">
         <Button
           variant="secondary"
           label=""
@@ -189,7 +189,7 @@ export default function EditCropScreen() {
       >
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerClassName="p-5 pb-12"
+          contentContainerClassName="p-5 pb-12 md:max-w-2xl md:w-full md:self-center md:py-8"
         >
           <View className="bg-surface p-5 rounded-3xl border border-soil/5 mb-6">
             <Text

@@ -47,11 +47,14 @@ export function Select({
 
       <Modal visible={modalVisible} transparent={true} animationType="fade">
         <Pressable
-          className="flex-1 justify-end bg-black/40"
+          className="flex-1 justify-end md:justify-center md:items-center bg-black/40 p-0 md:p-6"
           onPress={() => setModalVisible(false)}
         >
-          <View className="bg-surface rounded-t-3xl pb-8 max-h-[70%]">
-            <View className="px-5 py-4 border-b border-soil/5">
+          <View
+            className="bg-surface rounded-t-3xl md:rounded-2xl pb-8 md:pb-4 max-h-[70%] w-full md:max-w-md shadow-2xl"
+            onStartShouldSetResponder={() => true}
+          >
+            <View className="px-5 py-4 border-b border-soil/5 flex-row items-center justify-between">
               <Text
                 className="text-soil text-lg font-bold"
                 style={{ fontFamily: 'Inter-Bold' }}

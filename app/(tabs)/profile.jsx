@@ -6,10 +6,11 @@ import { supabase } from '@/lib/supabase';
 import { useStore } from '@/lib/store';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
-import { LogOut, User, Shield } from 'lucide-react-native';
+import { LogOut, User, Shield, CheckCircle2, MapPin, Phone, Building } from 'lucide-react-native';
 import { useIsAdmin } from '@/lib/api/admin';
 import { useToast } from '@/components/ui/Toast';
 import Animated, { FadeInUp, ZoomIn } from 'react-native-reanimated';
+
 export default function ProfileScreen() {
   const { session, profile, setProfile } = useStore();
   const router = useRouter();
@@ -21,6 +22,7 @@ export default function ProfileScreen() {
   const [landArea, setLandArea] = useState('');
   const { data: isAdmin } = useIsAdmin();
   const { showToast } = useToast();
+
   useEffect(() => {
     if (profile) {
       setFullName(profile.full_name || '');
@@ -34,6 +36,7 @@ export default function ProfileScreen() {
       fetchProfile();
     }
   }, [profile]);
+
   async function fetchProfile() {
     try {
       if (!session?.user) throw new Error('No user on the session!');
@@ -54,6 +57,7 @@ export default function ProfileScreen() {
       }
     }
   }
+
   async function updateProfile() {
     try {
       setLoading(true);
@@ -76,7 +80,7 @@ export default function ProfileScreen() {
         ...(profile ?? { id: session.user.id, preferred_language: '' }),
         ...updates,
       });
-      showToast('Profile saved!', 'success');
+      showToast('Profile saved successfully!', 'success');
     } catch (error) {
       if (error instanceof Error) {
         Alert.alert('Error updating profile', error.message);
@@ -85,6 +89,7 @@ export default function ProfileScreen() {
       setLoading(false);
     }
   }
+
   async function signOut() {
     const { error } = await supabase.auth.signOut();
     if (error) {
@@ -94,117 +99,221 @@ export default function ProfileScreen() {
       router.replace('/(auth)');
     }
   }
+
+  const userRole = profile?.role || session?.user?.user_metadata?.role || 'farmer';
+  const isRetailer = userRole === 'retailer';
+
   return (
     <SafeAreaView className="flex-1 bg-sand" edges={['top']}>
-      <View className="flex-row items-center justify-between px-5 pt-4 pb-2 border-b border-soil/5 md:max-w-lg md:w-full md:self-center">
-        <Text
-          className="text-soil text-2xl font-bold"
-          style={{ fontFamily: 'Inter-Bold' }}
-        >
-          Profile
-        </Text>
-        {isAdmin && (
-          <Pressable
-            onPress={() => router.push('/admin')}
-            className="flex-row items-center bg-leaf/10 px-4 py-2 rounded-full"
-            style={{ minHeight: 44 }}
-          >
-            <Shield size={18} color="#2E7D32" />
-            <Text
-              className="text-leaf font-bold ml-2 text-sm"
-              style={{ fontFamily: 'Inter-Bold' }}
-            >
-              Admin Panel
-            </Text>
-          </Pressable>
-        )}
-      </View>
-
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerClassName="px-5 pb-8 pt-4 md:max-w-lg md:w-full md:self-center md:py-8"
+        contentContainerStyle={{ paddingBottom: 60 }}
+        contentContainerClassName="w-full max-w-6xl mx-auto px-4 md:px-8 lg:px-12 pt-6"
       >
-        <Animated.View entering={ZoomIn.duration(500)}>
-          <View className="items-center mb-6">
-            <View className="w-20 h-20 rounded-full bg-leaf/10 items-center justify-center mb-3">
-              <User size={32} color="#2E7D32" strokeWidth={1.5} />
-            </View>
-            {profile?.full_name ? (
-              <Text
-                className="text-soil text-lg font-bold mb-0.5"
-                style={{ fontFamily: 'Inter-Bold' }}
-              >
-                {profile.full_name}
-              </Text>
-            ) : null}
+        {/* Desktop Header Banner */}
+        <View className="flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-5 border-b border-soil/5">
+          <View>
             <Text
-              className="text-soil-muted text-sm"
-              style={{ fontFamily: 'Inter-Regular' }}
-            >
-              {session?.user?.email}
-            </Text>
-          </View>
-        </Animated.View>
-
-        <Animated.View entering={FadeInUp.delay(150).duration(500)}>
-          <View className="bg-surface p-5 rounded-3xl border border-soil/5 mb-6">
-            <Text
-              className="text-soil text-lg font-bold mb-4"
+              className="text-soil text-2xl lg:text-3xl font-bold"
               style={{ fontFamily: 'Inter-Bold' }}
             >
-              Personal Information
+              Account & Profile
             </Text>
-
-            <Input
-              label="Full Name"
-              placeholder="Ramesh Kumar"
-              value={fullName}
-              onChangeText={setFullName}
-            />
-            <Input
-              label="Phone Number"
-              placeholder="9876543210"
-              value={phone}
-              onChangeText={setPhone}
-              keyboardType="phone-pad"
-            />
-            <Input
-              label="Village"
-              placeholder="Your village name"
-              value={village}
-              onChangeText={setVillage}
-            />
-            <Input
-              label="District"
-              placeholder="Your district"
-              value={district}
-              onChangeText={setDistrict}
-            />
-            <Input
-              label="Total Land Area (Acres)"
-              placeholder="e.g. 3.5"
-              value={landArea}
-              onChangeText={setLandArea}
-              keyboardType="numeric"
-            />
-
-            <Button
-              label={loading ? 'Saving...' : 'Save Changes'}
-              onPress={updateProfile}
-              disabled={loading}
-              className="mt-2"
-            />
+            <Text
+              className="text-soil-muted text-sm mt-1"
+              style={{ fontFamily: 'Inter-Regular' }}
+            >
+              Manage your personal credentials, contact details, and farming operations
+            </Text>
           </View>
-        </Animated.View>
 
-        <Animated.View entering={FadeInUp.delay(250).duration(500)}>
-          <Button
-            label="Log Out"
-            variant="secondary"
-            icon={<LogOut size={18} color="#3E2723" />}
-            onPress={signOut}
-          />
-        </Animated.View>
+          {isAdmin && (
+            <Pressable
+              onPress={() => router.push('/admin')}
+              className="flex-row items-center bg-leaf/10 border border-leaf/20 px-4 py-2.5 rounded-xl self-start sm:self-auto hover:bg-leaf/20"
+              style={{ minHeight: 42 }}
+            >
+              <Shield size={18} color="#2E7D32" strokeWidth={2} />
+              <Text
+                className="text-leaf font-bold ml-2 text-sm"
+                style={{ fontFamily: 'Inter-Bold' }}
+              >
+                Admin Panel
+              </Text>
+            </Pressable>
+          )}
+        </View>
+
+        {/* 2-Column Desktop SaaS Layout */}
+        <View className="flex-col lg:flex-row gap-8 items-start">
+          {/* Left Column: User Card & Sign Out (~340px) */}
+          <View className="w-full lg:w-80 shrink-0 flex-col gap-6">
+            <Animated.View entering={ZoomIn.duration(400)}>
+              <View
+                className="bg-surface rounded-2xl p-6 border border-soil/5 shadow-sm items-center text-center"
+                style={{
+                  shadowColor: '#3E2723',
+                  shadowOpacity: 0.04,
+                  shadowRadius: 8,
+                }}
+              >
+                <View className="w-24 h-24 rounded-full bg-leaf/10 items-center justify-center mb-4 border-2 border-leaf/20">
+                  <User size={44} color="#2E7D32" strokeWidth={1.6} />
+                </View>
+
+                <Text
+                  className="text-soil text-xl font-bold mb-1"
+                  style={{ fontFamily: 'Inter-Bold' }}
+                >
+                  {profile?.full_name || 'KhetiTantra User'}
+                </Text>
+
+                <Text
+                  className="text-soil-muted text-xs mb-3"
+                  style={{ fontFamily: 'Inter-Regular' }}
+                >
+                  {session?.user?.email}
+                </Text>
+
+                <View className="flex-row items-center bg-leaf/10 px-3 py-1 rounded-full border border-leaf/15 mb-4">
+                  <CheckCircle2 size={13} color="#2E7D32" />
+                  <Text
+                    className="text-leaf text-xs capitalize font-semibold ml-1.5"
+                    style={{ fontFamily: 'Inter-Medium' }}
+                  >
+                    {userRole} Account
+                  </Text>
+                </View>
+
+                {/* Metadata summary */}
+                <View className="w-full pt-4 border-t border-soil/5 space-y-2">
+                  <View className="flex-row items-center justify-between text-xs py-1">
+                    <Text className="text-soil-muted text-xs" style={{ fontFamily: 'Inter-Regular' }}>
+                      Status
+                    </Text>
+                    <Text className="text-leaf text-xs font-semibold" style={{ fontFamily: 'Inter-Medium' }}>
+                      Active
+                    </Text>
+                  </View>
+                  <View className="flex-row items-center justify-between text-xs py-1">
+                    <Text className="text-soil-muted text-xs" style={{ fontFamily: 'Inter-Regular' }}>
+                      Location
+                    </Text>
+                    <Text className="text-soil text-xs font-medium" style={{ fontFamily: 'Inter-Medium' }}>
+                      {profile?.district ? `${profile.district}` : 'Not set'}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            </Animated.View>
+
+            {/* Sign Out Card */}
+            <View className="bg-surface rounded-2xl p-4 border border-soil/5 shadow-xs">
+              <Button
+                label="Sign Out"
+                variant="secondary"
+                icon={<LogOut size={17} color="#3E2723" />}
+                onPress={signOut}
+              />
+            </View>
+          </View>
+
+          {/* Right Column: Editable Information Form */}
+          <View className="flex-1 w-full">
+            <Animated.View entering={FadeInUp.delay(100).duration(450)}>
+              <View
+                className="bg-surface rounded-2xl p-6 md:p-8 border border-soil/5 shadow-sm"
+                style={{
+                  shadowColor: '#3E2723',
+                  shadowOpacity: 0.04,
+                  shadowRadius: 8,
+                }}
+              >
+                <View className="mb-6 pb-4 border-b border-soil/5">
+                  <Text
+                    className="text-soil text-lg font-bold"
+                    style={{ fontFamily: 'Inter-Bold' }}
+                  >
+                    Personal & Farm Information
+                  </Text>
+                  <Text
+                    className="text-soil-muted text-xs mt-1"
+                    style={{ fontFamily: 'Inter-Regular' }}
+                  >
+                    Your details help us match regional market mandi rates and facilitate direct harvest trade.
+                  </Text>
+                </View>
+
+                {/* Form Inputs Grid */}
+                <View className="gap-4">
+                  <View className="flex-col sm:flex-row gap-4">
+                    <View className="flex-1">
+                      <Input
+                        label="Full Name"
+                        placeholder="e.g. Ramesh Kumar"
+                        value={fullName}
+                        onChangeText={setFullName}
+                      />
+                    </View>
+                    <View className="flex-1">
+                      <Input
+                        label="Phone Number"
+                        placeholder="e.g. 9876543210"
+                        value={phone}
+                        onChangeText={setPhone}
+                        keyboardType="phone-pad"
+                      />
+                    </View>
+                  </View>
+
+                  <View className="flex-col sm:flex-row gap-4">
+                    <View className="flex-1">
+                      <Input
+                        label="Village / Town"
+                        placeholder="Your village or town"
+                        value={village}
+                        onChangeText={setVillage}
+                      />
+                    </View>
+                    <View className="flex-1">
+                      <Input
+                        label="District"
+                        placeholder="e.g. Sambalpur, Puri"
+                        value={district}
+                        onChangeText={setDistrict}
+                      />
+                    </View>
+                  </View>
+
+                  {!isRetailer && (
+                    <View className="w-full sm:w-1/2 sm:pr-2">
+                      <Input
+                        label="Total Land Area (Acres)"
+                        placeholder="e.g. 4.5"
+                        value={landArea}
+                        onChangeText={setLandArea}
+                        keyboardType="numeric"
+                      />
+                    </View>
+                  )}
+
+                  <View className="pt-4 border-t border-soil/5 flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <Text className="text-soil-muted text-xs max-w-md" style={{ fontFamily: 'Inter-Regular' }}>
+                      Changes are synchronized across all your devices and marketplace listings automatically.
+                    </Text>
+
+                    <Button
+                      label={loading ? 'Saving Changes...' : 'Save Changes'}
+                      onPress={updateProfile}
+                      disabled={loading}
+                      className="w-full sm:w-auto px-8"
+                    />
+                  </View>
+                </View>
+              </View>
+            </Animated.View>
+          </View>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

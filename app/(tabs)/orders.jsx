@@ -2,41 +2,45 @@ import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
-import { Package } from 'lucide-react-native';
+import { Package, Truck, Clock, CheckCircle2 } from 'lucide-react-native';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { useRouter } from 'expo-router';
 
 export default function OrdersScreen() {
+  const router = useRouter();
+
   return (
     <SafeAreaView className="flex-1 bg-sand" edges={['top']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerClassName="p-5 pb-8 md:max-w-3xl md:w-full md:self-center md:py-10"
+        contentContainerStyle={{ paddingBottom: 60 }}
+        contentContainerClassName="w-full max-w-7xl mx-auto px-4 md:px-8 lg:px-12 pt-6"
       >
         <Animated.View
-          entering={FadeInDown.duration(500)}
-          className="flex-row items-center justify-between mb-6"
+          entering={FadeInDown.duration(450)}
+          className="flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-5 border-b border-soil/5"
         >
           <View>
-            <Text className="text-soil-muted text-base" style={{ fontFamily: 'Inter-Medium' }}>
-              Supply Chain
+            <Text className="text-soil text-2xl lg:text-3xl font-bold" style={{ fontFamily: 'Inter-Bold' }}>
+              Supply Chain Orders
             </Text>
-            <Text className="text-soil text-3xl font-bold mt-1" style={{ fontFamily: 'Inter-Bold' }}>
-              Orders
+            <Text className="text-soil-muted text-sm mt-1" style={{ fontFamily: 'Inter-Regular' }}>
+              Track direct farm-to-store deliveries, supplier contracts, and payment releases
             </Text>
           </View>
-          <View className="w-12 h-12 rounded-full bg-leaf/10 items-center justify-center">
+          <View className="w-12 h-12 rounded-2xl bg-leaf/10 items-center justify-center border border-leaf/15">
             <Package size={24} color="#2E7D32" strokeWidth={2} />
           </View>
         </Animated.View>
 
         <Animated.View entering={FadeInUp.delay(120).duration(450)}>
-          <View className="bg-surface border border-soil/5 rounded-2xl p-8 items-center justify-center shadow-sm mt-8">
-            <Text className="text-soil text-lg mb-2 text-center" style={{ fontFamily: 'Inter-Bold' }}>
-              Orders tracking coming soon
-            </Text>
-            <Text className="text-soil-muted text-center" style={{ fontFamily: 'Inter-Regular' }}>
-              Manage your crop purchases and contracts.
-            </Text>
-          </View>
+          <EmptyState
+            icon={<Package size={36} color="#2E7D32" strokeWidth={1.8} />}
+            title="No orders placed yet"
+            description="Browse active crop listings on the marketplace to connect directly with farmers and initiate wholesale supply contracts."
+            actionLabel="Explore Marketplace"
+            onAction={() => router.push('/(tabs)/marketplace')}
+          />
         </Animated.View>
       </ScrollView>
     </SafeAreaView>
