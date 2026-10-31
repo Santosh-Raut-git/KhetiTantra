@@ -7,6 +7,7 @@ import {
   TextInput,
   ActivityIndicator,
   RefreshControl,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -51,7 +52,7 @@ const CATEGORY_COLORS = {
   Other: { bg: 'bg-soil/5', text: 'text-soil-muted' },
 };
 
-function ListingCard({ listing, index, onPress }) {
+function ListingCard({ listing, index, onPress, cardWidth }) {
   const scale = useSharedValue(1);
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -63,9 +64,8 @@ function ListingCard({ listing, index, onPress }) {
 
   return (
     <Animated.View
-      entering={FadeInUp.delay(Math.min(index * 60, 300)).duration(400)}
-      style={animatedStyle}
-      className="w-full md:w-[calc(50%-10px)] lg:w-[calc(33.333%-12px)] xl:w-[calc(25%-12px)]"
+      entering={FadeInUp.delay(Math.min(index * 30, 240)).duration(300)}
+      style={[{ width: cardWidth, padding: 8 }, animatedStyle]}
     >
       <Pressable
         onPress={onPress}
@@ -81,6 +81,8 @@ function ListingCard({ listing, index, onPress }) {
           shadowOpacity: 0.04,
           shadowRadius: 8,
           shadowOffset: { width: 0, height: 2 },
+          height: '100%',
+          minHeight: 220,
         }}
       >
         <View>
@@ -194,7 +196,11 @@ function ListingCard({ listing, index, onPress }) {
 export default function MarketplaceScreen() {
   const router = useRouter();
   const { profile } = useStore();
+  const { width } = useWindowDimensions();
   const isFarmer = profile?.role === 'farmer' || !profile?.role;
+
+  const numColumns = width >= 1440 ? 4 : width >= 1024 ? 3 : width >= 640 ? 2 : 1;
+  const cardWidth = `${100 / numColumns}%`;
 
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('');
@@ -417,12 +423,13 @@ export default function MarketplaceScreen() {
             </View>
           </View>
         ) : (
-          <View className="flex-row flex-wrap gap-4">
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', margin: -8 }}>
             {filtered.map((listing, i) => (
               <ListingCard
                 key={listing.id}
                 listing={listing}
                 index={i}
+                cardWidth={cardWidth}
                 onPress={() => router.push(`/marketplace/${listing.id}`)}
               />
             ))}

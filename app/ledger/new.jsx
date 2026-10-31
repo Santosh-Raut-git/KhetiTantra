@@ -7,6 +7,7 @@ import {
   Platform,
   ActivityIndicator,
   Pressable,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -68,6 +69,9 @@ export default function AddTransactionScreen() {
   const { data: crops, isLoading: cropsLoading } = useCrops();
   const createTransaction = useCreateTransaction();
   const { showToast } = useToast();
+  const { width } = useWindowDimensions();
+  const isDesktop = width >= 1024;
+  const isTablet = width >= 640;
 
   const [receiptBase64, setReceiptBase64] = useState(null);
   const [receiptUri, setReceiptUri] = useState(null);
@@ -183,9 +187,23 @@ export default function AddTransactionScreen() {
           </View>
 
           {/* 2-Column Responsive Desktop Layout */}
-          <View className="flex-col lg:flex-row gap-8 items-start">
+          <View
+            style={{
+              flexDirection: isDesktop ? 'row' : 'column',
+              gap: 32,
+              alignItems: 'flex-start',
+              width: '100%',
+            }}
+          >
             {/* Left Column: Transaction Data Forms */}
-            <View className="flex-1 w-full flex-col gap-6">
+            <View
+              style={{
+                flex: isDesktop ? 1 : undefined,
+                width: isDesktop ? undefined : '100%',
+                minWidth: 0,
+                gap: 24,
+              }}
+            >
               <View
                 className="bg-surface rounded-2xl p-6 md:p-8 border border-soil/5 shadow-sm"
                 style={{
@@ -369,7 +387,13 @@ export default function AddTransactionScreen() {
             </View>
 
             {/* Right Column: AI OCR Scanner & Live Voucher (~380px) */}
-            <View className="w-full lg:w-96 shrink-0 flex-col gap-6">
+            <View
+              style={{
+                width: isDesktop ? 380 : '100%',
+                flexShrink: 0,
+                gap: 24,
+              }}
+            >
               {/* Smart Receipt Scanner Card */}
               <View
                 className="bg-surface rounded-2xl p-6 border border-soil/5 shadow-sm"

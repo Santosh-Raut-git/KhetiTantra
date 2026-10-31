@@ -6,6 +6,7 @@ import {
   Pressable,
   ActivityIndicator,
   Image,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -22,7 +23,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-function TransactionCard({ tx, index, onPress }) {
+function TransactionCard({ tx, index, onPress, cardWidth }) {
   const scale = useSharedValue(1);
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -32,9 +33,8 @@ function TransactionCard({ tx, index, onPress }) {
 
   return (
     <Animated.View
-      entering={FadeInUp.delay(Math.min(index * 50, 300)).duration(380)}
-      style={animatedStyle}
-      className="w-full md:w-[calc(50%-10px)] xl:w-[calc(33.333%-12px)]"
+      entering={FadeInUp.delay(Math.min(index * 30, 240)).duration(300)}
+      style={[{ width: cardWidth, padding: 8 }, animatedStyle]}
     >
       <Pressable
         onPress={onPress}
@@ -49,7 +49,9 @@ function TransactionCard({ tx, index, onPress }) {
           shadowColor: '#3E2723',
           shadowOpacity: 0.04,
           shadowRadius: 8,
-          shadowOffset: { width: 0, height: 1 },
+          shadowOffset: { width: 0, height: 2 },
+          height: '100%',
+          minHeight: 88,
         }}
       >
         <View className="flex-row items-center flex-1 mr-3">
@@ -132,8 +134,12 @@ function TransactionCard({ tx, index, onPress }) {
 
 export default function LedgerScreen() {
   const router = useRouter();
+  const { width } = useWindowDimensions();
   const [filterCrop, setFilterCrop] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
+
+  const numColumns = width >= 1440 ? 3 : width >= 800 ? 2 : 1;
+  const cardWidth = `${100 / numColumns}%`;
 
   const { data: crops } = useCrops();
   const {
@@ -320,34 +326,38 @@ export default function LedgerScreen() {
             onAction={() => router.push('/ledger/new')}
           />
         ) : (
-          <View className="flex-row flex-wrap gap-4">
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', margin: -8 }}>
             {filteredTransactions.map((tx, i) => (
               <TransactionCard
                 key={tx.id}
                 tx={tx}
                 index={i}
+                cardWidth={cardWidth}
                 onPress={() => router.push(`/ledger/${tx.id}`)}
               />
             ))}
 
             {/* If fewer than 4 transactions, offer a quick Add Transaction dashed card */}
             {filteredTransactions.length < 4 && (
-              <Pressable
-                onPress={() => router.push('/ledger/new')}
-                className="w-full md:w-[calc(50%-10px)] xl:w-[calc(33.333%-12px)] border-2 border-dashed border-soil/15 rounded-2xl p-5 items-center justify-center min-h-[90px] bg-surface/40 hover:bg-surface hover:border-leaf/50 transition-all flex-row gap-3"
-              >
-                <View className="w-10 h-10 rounded-xl bg-leaf/10 items-center justify-center">
-                  <Plus size={20} color="#2E7D32" strokeWidth={2.2} />
-                </View>
-                <View>
-                  <Text className="text-soil font-bold text-sm" style={{ fontFamily: 'Inter-Bold' }}>
-                    Record New Transaction
-                  </Text>
-                  <Text className="text-soil-muted text-xs" style={{ fontFamily: 'Inter-Regular' }}>
-                    Log seeds, fertilizers, fuel, or sales revenue
-                  </Text>
-                </View>
-              </Pressable>
+              <View style={{ width: cardWidth, padding: 8 }}>
+                <Pressable
+                  onPress={() => router.push('/ledger/new')}
+                  className="w-full border-2 border-dashed border-soil/15 rounded-2xl p-5 items-center justify-center bg-surface/40 hover:bg-surface hover:border-leaf/50 transition-all flex-row gap-3"
+                  style={{ height: '100%', minHeight: 88 }}
+                >
+                  <View className="w-10 h-10 rounded-xl bg-leaf/10 items-center justify-center">
+                    <Plus size={20} color="#2E7D32" strokeWidth={2.2} />
+                  </View>
+                  <View>
+                    <Text className="text-soil font-bold text-sm" style={{ fontFamily: 'Inter-Bold' }}>
+                      Record New Transaction
+                    </Text>
+                    <Text className="text-soil-muted text-xs" style={{ fontFamily: 'Inter-Regular' }}>
+                      Log seeds, fertilizers, fuel, or sales revenue
+                    </Text>
+                  </View>
+                </Pressable>
+              </View>
             )}
           </View>
         )}

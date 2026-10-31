@@ -34,6 +34,8 @@ export default function AdminTransactionsScreen() {
   const { data: transactions, isLoading, refetch } = useAdminTransactions();
   const deleteTransaction = useDeleteTransactionAdmin();
   const { width } = useWindowDimensions();
+  const numColumns = width >= 1440 ? 4 : width >= 1024 ? 3 : width >= 640 ? 2 : 1;
+  const cardWidth = `${100 / numColumns}%`;
 
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState(''); // '' | 'income' | 'expense'
@@ -330,15 +332,15 @@ export default function AdminTransactionsScreen() {
             </Text>
           </View>
         ) : (
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 16 }}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', margin: -8 }}>
             {filteredTransactions.map((tx, i) => {
               const isIncome = tx.type === 'income';
 
               return (
                 <Animated.View
                   key={tx.id}
-                  entering={FadeInUp.delay(Math.min(i * 35, 240)).duration(350)}
-                  className="w-full md:w-[calc(50%-8px)] xl:w-[calc(33.333%-11px)]"
+                  entering={FadeInUp.delay(Math.min(i * 30, 240)).duration(300)}
+                  style={{ width: cardWidth, padding: 8 }}
                 >
                   <View
                     style={{
@@ -347,10 +349,11 @@ export default function AdminTransactionsScreen() {
                       borderWidth: 1,
                       borderColor: 'rgba(62,39,35,0.06)',
                       padding: 18,
+                      height: '100%',
+                      minHeight: 190,
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'space-between',
-                      minHeight: 180,
                       shadowColor: '#3E2723',
                       shadowOpacity: 0.04,
                       shadowRadius: 8,

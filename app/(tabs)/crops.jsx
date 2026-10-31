@@ -5,6 +5,7 @@ import {
   ScrollView,
   Pressable,
   ActivityIndicator,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Plus, Sprout, ChevronRight, CheckCircle2, Calendar, MapPin } from 'lucide-react-native';
@@ -19,7 +20,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-function CropCard({ crop, index, netProfit, onPress }) {
+function CropCard({ crop, index, netProfit, onPress, cardWidth }) {
   const scale = useSharedValue(1);
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -27,9 +28,8 @@ function CropCard({ crop, index, netProfit, onPress }) {
 
   return (
     <Animated.View
-      entering={FadeInUp.delay(Math.min(index * 60, 300)).duration(400)}
-      style={animatedStyle}
-      className="w-full md:w-[calc(50%-10px)] lg:w-[calc(33.333%-12px)] xl:w-[calc(25%-12px)]"
+      entering={FadeInUp.delay(Math.min(index * 30, 240)).duration(300)}
+      style={[{ width: cardWidth, padding: 8 }, animatedStyle]}
     >
       <Pressable
         onPress={onPress}
@@ -45,6 +45,8 @@ function CropCard({ crop, index, netProfit, onPress }) {
           shadowOpacity: 0.04,
           shadowRadius: 8,
           shadowOffset: { width: 0, height: 2 },
+          height: '100%',
+          minHeight: 190,
         }}
       >
         <View>
@@ -139,6 +141,10 @@ export default function CropsScreen() {
   const router = useRouter();
   const { data: crops, isLoading, error } = useCrops();
   const { data: cropProfits } = useCropProfits();
+  const { width } = useWindowDimensions();
+
+  const numColumns = width >= 1440 ? 4 : width >= 1024 ? 3 : width >= 640 ? 2 : 1;
+  const cardWidth = `${100 / numColumns}%`;
 
   const getProfit = (cropId) => {
     return cropProfits?.find((p) => p.crop_id === cropId)?.net_profit || 0;
@@ -259,12 +265,13 @@ export default function CropsScreen() {
             onAction={() => router.push('/crops/new')}
           />
         ) : (
-          <View className="flex-row flex-wrap gap-4">
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', margin: -8 }}>
             {crops?.map((crop, i) => (
               <CropCard
                 key={crop.id}
                 crop={crop}
                 index={i}
+                cardWidth={cardWidth}
                 netProfit={getProfit(crop.id)}
                 onPress={() => router.push(`/crops/${crop.id}`)}
               />
@@ -272,20 +279,23 @@ export default function CropsScreen() {
 
             {/* If fewer than 3 crops, show a dashed Add Crop card so space is balanced */}
             {crops && crops.length < 3 && (
-              <Pressable
-                onPress={() => router.push('/crops/new')}
-                className="w-full md:w-[calc(50%-10px)] lg:w-[calc(33.333%-12px)] xl:w-[calc(25%-12px)] border-2 border-dashed border-soil/15 rounded-2xl p-6 items-center justify-center min-h-[180px] bg-surface/50 hover:bg-surface hover:border-leaf/50 transition-all"
-              >
-                <View className="w-12 h-12 rounded-full bg-leaf/10 items-center justify-center mb-3">
-                  <Plus size={22} color="#2E7D32" strokeWidth={2.2} />
-                </View>
-                <Text className="text-soil font-bold text-sm" style={{ fontFamily: 'Inter-Bold' }}>
-                  Add Another Crop
-                </Text>
-                <Text className="text-soil-muted text-xs mt-1 text-center" style={{ fontFamily: 'Inter-Regular' }}>
-                  Track upcoming Kharif, Rabi, or Zaid cycles
-                </Text>
-              </Pressable>
+              <View style={{ width: cardWidth, padding: 8 }}>
+                <Pressable
+                  onPress={() => router.push('/crops/new')}
+                  className="w-full border-2 border-dashed border-soil/15 rounded-2xl p-6 items-center justify-center bg-surface/50 hover:bg-surface hover:border-leaf/50 transition-all"
+                  style={{ height: '100%', minHeight: 190 }}
+                >
+                  <View className="w-12 h-12 rounded-full bg-leaf/10 items-center justify-center mb-3">
+                    <Plus size={22} color="#2E7D32" strokeWidth={2.2} />
+                  </View>
+                  <Text className="text-soil font-bold text-sm" style={{ fontFamily: 'Inter-Bold' }}>
+                    Add Another Crop
+                  </Text>
+                  <Text className="text-soil-muted text-xs mt-1 text-center" style={{ fontFamily: 'Inter-Regular' }}>
+                    Track upcoming Kharif, Rabi, or Zaid cycles
+                  </Text>
+                </Pressable>
+              </View>
             )}
           </View>
         )}

@@ -210,7 +210,7 @@ function CategoryChip({ label, isActive, onPress }) {
   );
 }
 
-function FeedListingCard({ listing, index, onPress }) {
+function FeedListingCard({ listing, index, onPress, cardWidth }) {
   const scale = useSharedValue(1);
   const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
   const unitLabel = UNIT_LABELS[listing.unit] || listing.unit;
@@ -218,9 +218,8 @@ function FeedListingCard({ listing, index, onPress }) {
 
   return (
     <Animated.View
-      entering={FadeInUp.delay(Math.min(index * 50, 300)).duration(380)}
-      style={animStyle}
-      className="w-full md:w-[calc(50%-8px)] xl:w-[calc(33.333%-11px)]"
+      entering={FadeInUp.delay(Math.min(index * 30, 240)).duration(300)}
+      style={[{ width: cardWidth || '100%', padding: 8 }, animStyle]}
     >
       <Pressable
         onPress={onPress}
@@ -232,6 +231,11 @@ function FeedListingCard({ listing, index, onPress }) {
           borderWidth: 1,
           borderColor: 'rgba(62,39,35,0.06)',
           padding: 16,
+          height: '100%',
+          minHeight: 180,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
           shadowColor: '#3E2723',
           shadowOpacity: 0.04,
           shadowRadius: 8,
@@ -682,12 +686,13 @@ export default function DashboardScreen() {
                 </Pressable>
               </View>
             ) : (
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 16 }}>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', margin: -8 }}>
                 {filteredListings.map((listing, i) => (
                   <FeedListingCard
                     key={listing.id}
                     listing={listing}
                     index={i}
+                    cardWidth={isDesktop ? '50%' : '100%'}
                     onPress={() => router.push(`/marketplace/${listing.id}`)}
                   />
                 ))}

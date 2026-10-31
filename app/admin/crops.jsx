@@ -32,6 +32,8 @@ export default function AdminCropsScreen() {
   const { data: crops, isLoading, refetch } = useAdminCrops();
   const deleteCrop = useDeleteCropAdmin();
   const { width } = useWindowDimensions();
+  const numColumns = width >= 1440 ? 4 : width >= 1024 ? 3 : width >= 640 ? 2 : 1;
+  const cardWidth = `${100 / numColumns}%`;
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -361,12 +363,12 @@ export default function AdminCropsScreen() {
             </Text>
           </View>
         ) : (
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 16 }}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', margin: -8 }}>
             {filteredCrops.map((crop, i) => (
               <Animated.View
                 key={crop.id}
-                entering={FadeInUp.delay(Math.min(i * 35, 240)).duration(350)}
-                className="w-full md:w-[calc(50%-10px)] lg:w-[calc(33.333%-12px)] xl:w-[calc(25%-12px)]"
+                entering={FadeInUp.delay(Math.min(i * 30, 240)).duration(300)}
+                style={{ width: cardWidth, padding: 8 }}
               >
                 <View
                   style={{
@@ -375,10 +377,11 @@ export default function AdminCropsScreen() {
                     borderWidth: 1,
                     borderColor: 'rgba(62,39,35,0.06)',
                     padding: 18,
+                    height: '100%',
+                    minHeight: 200,
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
-                    minHeight: 180,
                     shadowColor: '#3E2723',
                     shadowOpacity: 0.04,
                     shadowRadius: 8,

@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Linking,
   Modal,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -35,7 +36,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-function GrowerCard({ grower, index, onSelect, onCall }) {
+function GrowerCard({ grower, index, onSelect, onCall, cardWidth }) {
   const scale = useSharedValue(1);
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -50,9 +51,8 @@ function GrowerCard({ grower, index, onSelect, onCall }) {
 
   return (
     <Animated.View
-      entering={FadeInUp.delay(Math.min(index * 60, 300)).duration(400)}
-      style={animatedStyle}
-      className="w-full md:w-[calc(50%-10px)] lg:w-[calc(33.333%-12px)] xl:w-[calc(25%-12px)]"
+      entering={FadeInUp.delay(Math.min(index * 30, 240)).duration(300)}
+      style={[{ width: cardWidth, padding: 8 }, animatedStyle]}
     >
       <Pressable
         onPress={() => onSelect(grower)}
@@ -71,7 +71,8 @@ function GrowerCard({ grower, index, onSelect, onCall }) {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 220,
+          height: '100%',
+          minHeight: 230,
           shadowColor: '#3E2723',
           shadowOpacity: 0.04,
           shadowRadius: 8,
@@ -252,6 +253,10 @@ export default function NetworkScreen() {
   const router = useRouter();
   const { showToast } = useToast();
   const { data, isLoading, error, refetch } = useGrowers();
+  const { width } = useWindowDimensions();
+
+  const numColumns = width >= 1440 ? 4 : width >= 1024 ? 3 : width >= 640 ? 2 : 1;
+  const cardWidth = `${100 / numColumns}%`;
 
   const [search, setSearch] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('');
@@ -673,12 +678,13 @@ export default function NetworkScreen() {
             </Text>
           </View>
         ) : (
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 16 }}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', margin: -8 }}>
             {filteredGrowers.map((grower, i) => (
               <GrowerCard
                 key={grower.id}
                 grower={grower}
                 index={i}
+                cardWidth={cardWidth}
                 onSelect={(g) => setActiveModalGrower(g)}
                 onCall={handleCall}
               />

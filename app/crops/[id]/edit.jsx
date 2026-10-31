@@ -7,6 +7,7 @@ import {
   Platform,
   ActivityIndicator,
   Pressable,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -100,6 +101,10 @@ export default function EditCropScreen() {
   const { data: crop, isLoading: isCropLoading } = useCrop(id);
   const updateCrop = useUpdateCrop();
   const [isReady, setIsReady] = useState(false);
+  const { width } = useWindowDimensions();
+
+  const isDesktop = width >= 1024;
+  const isTablet = width >= 640;
 
   const {
     control,
@@ -219,9 +224,23 @@ export default function EditCropScreen() {
           </View>
 
           {/* 2-Column Responsive SaaS Body */}
-          <View className="flex-col lg:flex-row gap-8 items-start">
+          <View
+            style={{
+              flexDirection: isDesktop ? 'row' : 'column',
+              gap: 32,
+              alignItems: 'flex-start',
+              width: '100%',
+            }}
+          >
             {/* Left Column: Form Cards */}
-            <View className="flex-1 w-full flex-col gap-6">
+            <View
+              style={{
+                flex: isDesktop ? 1 : undefined,
+                width: isDesktop ? undefined : '100%',
+                minWidth: 0,
+                gap: 24,
+              }}
+            >
               {/* Card 1: Botanical & Plot Info */}
               <View
                 className="bg-surface rounded-2xl p-6 md:p-8 border border-soil/5 shadow-sm"
@@ -246,8 +265,8 @@ export default function EditCropScreen() {
                 </View>
 
                 <View className="flex-col gap-4">
-                  <View className="flex-col sm:flex-row gap-4">
-                    <View className="flex-1">
+                  <View style={{ flexDirection: isTablet ? 'row' : 'column', gap: 16 }}>
+                    <View style={{ flex: isTablet ? 1 : undefined, width: isTablet ? undefined : '100%' }}>
                       <Controller
                         control={control}
                         name="crop_name"
@@ -261,7 +280,7 @@ export default function EditCropScreen() {
                         )}
                       />
                     </View>
-                    <View className="flex-1">
+                    <View style={{ flex: isTablet ? 1 : undefined, width: isTablet ? undefined : '100%' }}>
                       <Controller
                         control={control}
                         name="variety"
@@ -277,8 +296,8 @@ export default function EditCropScreen() {
                     </View>
                   </View>
 
-                  <View className="flex-col sm:flex-row gap-4">
-                    <View className="flex-1">
+                  <View style={{ flexDirection: isTablet ? 'row' : 'column', gap: 16 }}>
+                    <View style={{ flex: isTablet ? 1 : undefined, width: isTablet ? undefined : '100%' }}>
                       <Controller
                         control={control}
                         name="season"
@@ -297,7 +316,7 @@ export default function EditCropScreen() {
                         )}
                       />
                     </View>
-                    <View className="flex-1">
+                    <View style={{ flex: isTablet ? 1 : undefined, width: isTablet ? undefined : '100%' }}>
                       <Controller
                         control={control}
                         name="area_acres"
@@ -340,8 +359,8 @@ export default function EditCropScreen() {
                 </View>
 
                 <View className="flex-col gap-4">
-                  <View className="flex-col sm:flex-row gap-4">
-                    <View className="flex-1">
+                  <View style={{ flexDirection: isTablet ? 'row' : 'column', gap: 16 }}>
+                    <View style={{ flex: isTablet ? 1 : undefined, width: isTablet ? undefined : '100%' }}>
                       <Controller
                         control={control}
                         name="sowing_date"
@@ -355,7 +374,7 @@ export default function EditCropScreen() {
                         )}
                       />
                     </View>
-                    <View className="flex-1">
+                    <View style={{ flex: isTablet ? 1 : undefined, width: isTablet ? undefined : '100%' }}>
                       <Controller
                         control={control}
                         name="expected_harvest_date"
@@ -400,8 +419,8 @@ export default function EditCropScreen() {
                           Harvest & Yield Records
                         </Text>
                       </View>
-                      <View className="flex-col sm:flex-row gap-4">
-                        <View className="flex-1">
+                      <View style={{ flexDirection: isTablet ? 'row' : 'column', gap: 16 }}>
+                        <View style={{ flex: isTablet ? 1 : undefined, width: isTablet ? undefined : '100%' }}>
                           <Controller
                             control={control}
                             name="actual_harvest_date"
@@ -415,7 +434,7 @@ export default function EditCropScreen() {
                             )}
                           />
                         </View>
-                        <View className="flex-1">
+                        <View style={{ flex: isTablet ? 1 : undefined, width: isTablet ? undefined : '100%' }}>
                           <Controller
                             control={control}
                             name="yield_quantity"
@@ -453,8 +472,14 @@ export default function EditCropScreen() {
               </View>
             </View>
 
-            {/* Right Column: Live Card Preview & Batch Information (~360px) */}
-            <View className="w-full lg:w-92 shrink-0 flex-col gap-6">
+            {/* Right Column: Live Card Preview & Batch Information */}
+            <View
+              style={{
+                width: isDesktop ? 380 : '100%',
+                flexShrink: 0,
+                gap: 24,
+              }}
+            >
               {/* Live Preview Card */}
               <View
                 className="bg-surface rounded-2xl p-6 border border-soil/5 shadow-sm"
