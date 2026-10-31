@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Alert, ScrollView, Pressable } from 'react-native';
+import { View, Text, Alert, ScrollView, Pressable, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { supabase } from '@/lib/supabase';
+import { supabase, supabasePublic } from '@/lib/supabase';
 import { useStore } from '@/lib/store';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
@@ -39,11 +39,11 @@ export default function ProfileScreen() {
 
   async function fetchProfile() {
     try {
-      if (!session?.user) throw new Error('No user on the session!');
-      const { data, error, status } = await supabase
+      if (!session?.user?.id) return;
+      const { data, error, status } = await supabasePublic
         .from('profiles')
-        .select(`*`)
-        .eq('id', session?.user.id)
+        .select('*')
+        .eq('id', session.user.id)
         .single();
       if (error && status !== 406) {
         throw error;
@@ -52,38 +52,58 @@ export default function ProfileScreen() {
         setProfile(data);
       }
     } catch (error) {
-      if (error instanceof Error) {
-        Alert.alert('Error loading profile', error.message);
-      }
+      console.warn('Profile fetch warning in profile.jsx:', error);
     }
   }
 
   async function updateProfile() {
     try {
       setLoading(true);
-      if (!session?.user) throw new Error('No user on the session!');
+      if (!session?.user?.id) throw new Error('No user on the session!');
+      const cleanName = fullName.trim();
       const updates = {
-        id: session?.user.id,
-        full_name: fullName,
-        phone,
-        village,
-        district,
+        id: session.user.id,
+        full_name: cleanName,
+        phone: phone.trim(),
+        village: village.trim(),
+        district: district.trim(),
         land_area_acres: landArea ? parseFloat(landArea) : null,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),
       };
-      const { error } = await supabase.from('profiles').upsert(updates);
+
+      // 1. Update public.profiles table in Supabase Database (using supabasePublic to avoid recursive RLS errors)
+      const { data, error } = await supabasePublic
+        .from('profiles')
+        .upsert(updates)
+        .select()
+        .single();
+
       if (error) {
         throw error;
       }
-      // Update the store immediately so the dashboard re-renders with the new name
-      setProfile({
-        ...(profile ?? { id: session.user.id, preferred_language: '' }),
+
+      // 2. Also keep Supabase Auth metadata in sync so session object carries the updated name
+      try {
+        await supabase.auth.updateUser({
+          data: { full_name: cleanName, name: cleanName },
+        });
+      } catch (authErr) {
+        console.warn('Auth user metadata sync warning:', authErr);
+      }
+
+      // 3. Immediately update global Zustand store so Dashboard and Sidebar re-render in real time
+      const freshProfile = data || {
+        ...(profile ?? { id: session.user.id, preferred_language: 'en' }),
         ...updates,
-      });
-      showToast('Profile saved successfully!', 'success');
+      };
+      setProfile(freshProfile);
+
+      showToast('Profile saved successfully! Dashboard updated.', 'success');
     } catch (error) {
-      if (error instanceof Error) {
-        Alert.alert('Error updating profile', error.message);
+      const msg = error instanceof Error ? error.message : 'Error updating profile';
+      showToast(msg, 'error');
+      if (Platform.OS !== 'web') {
+        Alert.alert('Error updating profile', msg);
       }
     } finally {
       setLoading(false);
@@ -107,8 +127,8 @@ export default function ProfileScreen() {
     <SafeAreaView className="flex-1 bg-sand" edges={['top']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 60 }}
-        contentContainerClassName="w-full max-w-6xl mx-auto px-4 md:px-8 lg:px-12 pt-6"
+        contentContainerStyle={{ paddingBottom: 60, width: '100%' }}
+        contentContainerClassName="w-full px-5 md:px-8 lg:px-10 xl:px-12 pt-6"
       >
         {/* Desktop Header Banner */}
         <View className="flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-5 border-b border-soil/5">
@@ -165,7 +185,7 @@ export default function ProfileScreen() {
                   className="text-soil text-xl font-bold mb-1"
                   style={{ fontFamily: 'Inter-Bold' }}
                 >
-                  {profile?.full_name || 'KhetiTantra User'}
+                  {profile?.full_name || fullName || 'KhetiTantra User'}
                 </Text>
 
                 <Text
@@ -249,7 +269,7 @@ export default function ProfileScreen() {
                   <View className="flex-col sm:flex-row gap-4">
                     <View className="flex-1">
                       <Input
-                        label="Full Name"
+                        label="Username / Full Name"
                         placeholder="e.g. Ramesh Kumar"
                         value={fullName}
                         onChangeText={setFullName}

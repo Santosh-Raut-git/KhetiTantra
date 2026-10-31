@@ -13,8 +13,8 @@ export default function OrdersScreen() {
     <SafeAreaView className="flex-1 bg-sand" edges={['top']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 60 }}
-        contentContainerClassName="w-full max-w-7xl mx-auto px-4 md:px-8 lg:px-12 pt-6"
+        contentContainerStyle={{ paddingBottom: 60, width: '100%' }}
+        contentContainerClassName="w-full px-5 md:px-8 lg:px-10 xl:px-12 pt-6"
       >
         <Animated.View
           entering={FadeInDown.duration(450)}

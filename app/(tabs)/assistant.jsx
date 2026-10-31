@@ -257,7 +257,7 @@ export default function AssistantScreen() {
           zIndex: 10,
         }}
       >
-        <View style={{ maxWidth: 896, marginHorizontal: 'auto', width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <View
               style={{
@@ -339,7 +339,7 @@ export default function AssistantScreen() {
             </Pressable>
           </View>
         ) : (
-          <View style={{ flex: 1, maxWidth: 896, marginHorizontal: 'auto', width: '100%' }}>
+          <View style={{ flex: 1, width: '100%' }}>
             <FlatList
               ref={flatListRef}
               data={messages}
@@ -486,7 +486,7 @@ export default function AssistantScreen() {
             shadowRadius: 6,
           }}
         >
-          <View style={{ maxWidth: 896, marginHorizontal: 'auto', width: '100%' }}>
+          <View style={{ width: '100%' }}>
             <View
               style={{
                 flexDirection: 'row',

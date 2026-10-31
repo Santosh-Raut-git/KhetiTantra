@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useStore } from '@/lib/store';
+import { supabasePublic } from '@/lib/supabase';
 import { useCrops } from '@/lib/api/crops';
 import { useTransactions } from '@/lib/api/transactions';
 import { useListings, useMarketplaceStats } from '@/lib/api/listings';
@@ -219,7 +220,7 @@ function FeedListingCard({ listing, index, onPress }) {
     <Animated.View
       entering={FadeInUp.delay(Math.min(index * 50, 300)).duration(380)}
       style={animStyle}
-      className="w-full md:w-[calc(50%-8px)]"
+      className="w-full md:w-[calc(50%-8px)] xl:w-[calc(33.333%-11px)]"
     >
       <Pressable
         onPress={onPress}
@@ -308,7 +309,7 @@ function FeedListingCard({ listing, index, onPress }) {
 }
 
 export default function DashboardScreen() {
-  const { profile, session } = useStore();
+  const { profile, setProfile, session } = useStore();
   const router = useRouter();
   const { width } = useWindowDimensions();
   const isDesktop = width >= 1024;
@@ -321,7 +322,38 @@ export default function DashboardScreen() {
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('');
 
-  const onRefresh = () => {
+    // Keep profile synchronized directly from database
+  useEffect(() => {
+    async function loadFreshProfile() {
+      if (session?.user?.id) {
+        try {
+          const { data } = await supabasePublic
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+          if (data) setProfile(data);
+        } catch (e) {
+          console.warn('Dashboard profile fetch error:', e);
+        }
+      }
+    }
+    loadFreshProfile();
+  }, [session?.user?.id]);
+
+  const onRefresh = async () => {
+    if (session?.user?.id) {
+      try {
+        const { data } = await supabasePublic
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+        if (data) setProfile(data);
+      } catch (e) {
+        console.warn('Dashboard profile refresh error:', e);
+      }
+    }
     refetchCrops();
     refetchTx();
     refetchListings();
@@ -366,15 +398,16 @@ export default function DashboardScreen() {
   const rawName =
     profile?.full_name ||
     session?.user?.user_metadata?.full_name ||
+    session?.user?.user_metadata?.name ||
     session?.user?.email?.split('@')[0];
-  const firstName = rawName?.split(' ')[0] || defaultTitle;
+  const displayName = rawName || defaultTitle;
 
   return (
     <SafeAreaView className="flex-1 bg-sand" edges={['top']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 60 }}
-        contentContainerClassName="w-full max-w-7xl mx-auto px-4 md:px-8 lg:px-12 pt-6"
+        contentContainerStyle={{ paddingBottom: 60, width: '100%' }}
+        contentContainerClassName="w-full px-5 md:px-8 lg:px-10 xl:px-12 pt-6"
         refreshControl={
           <RefreshControl refreshing={false} onRefresh={onRefresh} colors={['#2E7D32']} />
         }
@@ -409,7 +442,7 @@ export default function DashboardScreen() {
             <Text
               style={{ fontFamily: 'Inter-Bold', fontSize: 32, color: '#3E2723' }}
             >
-              {firstName}
+              {displayName}
             </Text>
           </View>
 
@@ -665,7 +698,7 @@ export default function DashboardScreen() {
           {/* Right Column: Quick Actions + Market Insights + AI Callout with gap: 20 */}
           <View
             style={{
-              width: isDesktop ? 340 : '100%',
+              width: isDesktop ? 360 : '100%',
               display: 'flex',
               flexDirection: 'column',
               gap: 20,

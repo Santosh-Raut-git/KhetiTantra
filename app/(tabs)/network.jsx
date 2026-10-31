@@ -52,7 +52,7 @@ function GrowerCard({ grower, index, onSelect, onCall }) {
     <Animated.View
       entering={FadeInUp.delay(Math.min(index * 60, 300)).duration(400)}
       style={animatedStyle}
-      className="w-full md:w-[calc(50%-8px)] lg:w-[calc(33.333%-11px)]"
+      className="w-full md:w-[calc(50%-10px)] lg:w-[calc(33.333%-12px)] xl:w-[calc(25%-12px)]"
     >
       <Pressable
         onPress={() => onSelect(grower)}
@@ -337,8 +337,8 @@ export default function NetworkScreen() {
     <SafeAreaView className="flex-1 bg-sand" edges={['top']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 60 }}
-        contentContainerClassName="w-full max-w-7xl mx-auto px-4 md:px-8 lg:px-12 pt-6"
+        contentContainerStyle={{ paddingBottom: 60, width: '100%' }}
+        contentContainerClassName="w-full px-5 md:px-8 lg:px-10 xl:px-12 pt-6"
       >
         {/* Desktop Header Banner */}
         <View

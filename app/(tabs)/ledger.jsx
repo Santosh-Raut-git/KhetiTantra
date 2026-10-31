@@ -34,7 +34,7 @@ function TransactionCard({ tx, index, onPress }) {
     <Animated.View
       entering={FadeInUp.delay(Math.min(index * 50, 300)).duration(380)}
       style={animatedStyle}
-      className="w-full md:w-[calc(50%-8px)]"
+      className="w-full md:w-[calc(50%-10px)] xl:w-[calc(33.333%-12px)]"
     >
       <Pressable
         onPress={onPress}
@@ -185,8 +185,8 @@ export default function LedgerScreen() {
     <SafeAreaView className="flex-1 bg-sand" edges={['top']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 60 }}
-        contentContainerClassName="w-full max-w-7xl mx-auto px-4 md:px-8 lg:px-12 pt-6"
+        contentContainerStyle={{ paddingBottom: 60, width: '100%' }}
+        contentContainerClassName="w-full px-5 md:px-8 lg:px-10 xl:px-12 pt-6"
       >
         {/* Desktop Header Banner */}
         <View className="flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-5 border-b border-soil/5">
@@ -334,7 +334,7 @@ export default function LedgerScreen() {
             {filteredTransactions.length < 4 && (
               <Pressable
                 onPress={() => router.push('/ledger/new')}
-                className="w-full md:w-[calc(50%-8px)] border-2 border-dashed border-soil/15 rounded-2xl p-5 items-center justify-center min-h-[90px] bg-surface/40 hover:bg-surface hover:border-leaf/50 transition-all flex-row gap-3"
+                className="w-full md:w-[calc(50%-10px)] xl:w-[calc(33.333%-12px)] border-2 border-dashed border-soil/15 rounded-2xl p-5 items-center justify-center min-h-[90px] bg-surface/40 hover:bg-surface hover:border-leaf/50 transition-all flex-row gap-3"
               >
                 <View className="w-10 h-10 rounded-xl bg-leaf/10 items-center justify-center">
                   <Plus size={20} color="#2E7D32" strokeWidth={2.2} />

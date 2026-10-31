@@ -29,7 +29,7 @@ function CropCard({ crop, index, netProfit, onPress }) {
     <Animated.View
       entering={FadeInUp.delay(Math.min(index * 60, 300)).duration(400)}
       style={animatedStyle}
-      className="w-full md:w-[calc(50%-8px)] lg:w-[calc(33.333%-11px)]"
+      className="w-full md:w-[calc(50%-10px)] lg:w-[calc(33.333%-12px)] xl:w-[calc(25%-12px)]"
     >
       <Pressable
         onPress={onPress}
@@ -170,8 +170,8 @@ export default function CropsScreen() {
     <SafeAreaView className="flex-1 bg-sand" edges={['top']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 60 }}
-        contentContainerClassName="w-full max-w-7xl mx-auto px-4 md:px-8 lg:px-12 pt-6"
+        contentContainerStyle={{ paddingBottom: 60, width: '100%' }}
+        contentContainerClassName="w-full px-5 md:px-8 lg:px-10 xl:px-12 pt-6"
       >
         {/* Desktop Header Banner */}
         <View className="flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-5 border-b border-soil/5">
@@ -274,7 +274,7 @@ export default function CropsScreen() {
             {crops && crops.length < 3 && (
               <Pressable
                 onPress={() => router.push('/crops/new')}
-                className="w-full md:w-[calc(50%-8px)] lg:w-[calc(33.333%-11px)] border-2 border-dashed border-soil/15 rounded-2xl p-6 items-center justify-center min-h-[180px] bg-surface/50 hover:bg-surface hover:border-leaf/50 transition-all"
+                className="w-full md:w-[calc(50%-10px)] lg:w-[calc(33.333%-12px)] xl:w-[calc(25%-12px)] border-2 border-dashed border-soil/15 rounded-2xl p-6 items-center justify-center min-h-[180px] bg-surface/50 hover:bg-surface hover:border-leaf/50 transition-all"
               >
                 <View className="w-12 h-12 rounded-full bg-leaf/10 items-center justify-center mb-3">
                   <Plus size={22} color="#2E7D32" strokeWidth={2.2} />
