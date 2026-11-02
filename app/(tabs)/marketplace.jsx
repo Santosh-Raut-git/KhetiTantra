@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   RefreshControl,
   useWindowDimensions,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -81,7 +82,7 @@ function ListingCard({ listing, index, onPress, cardWidth }) {
           shadowOpacity: 0.04,
           shadowRadius: 8,
           shadowOffset: { width: 0, height: 2 },
-          height: '100%',
+          height: Platform.OS === 'web' ? '100%' : undefined,
           minHeight: 220,
         }}
       >
@@ -239,10 +240,10 @@ export default function MarketplaceScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-sand" edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#F5F5F0' }} edges={['top']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 60, width: '100%' }}
+        contentContainerStyle={{ paddingBottom: 80, paddingHorizontal: width >= 768 ? 32 : 16, paddingTop: 20, flexGrow: 1 }}
         contentContainerClassName="w-full px-5 md:px-8 lg:px-10 xl:px-12 pt-6"
         refreshControl={
           <RefreshControl
@@ -308,27 +309,27 @@ export default function MarketplaceScreen() {
             )}
           </View>
 
-          {/* Category chips */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ gap: 8 }}
-          >
+          {/* Category chips - Wrapped so all categories are instantly visible without scrolling */}
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, paddingTop: 2 }}>
             {categories.map((cat) => {
               const isActive = activeCategory === cat;
               return (
                 <Pressable
                   key={cat || 'all'}
                   onPress={() => setActiveCategory(cat)}
-                  className={`px-4 py-2 rounded-xl border ${isActive
-                    ? 'bg-leaf border-leaf'
-                    : 'bg-sand/60 border-soil/10'
-                    }`}
+                  style={{
+                    paddingHorizontal: 12,
+                    paddingVertical: 7,
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    backgroundColor: isActive ? '#2E7D32' : 'rgba(245,245,240,0.85)',
+                    borderColor: isActive ? '#2E7D32' : 'rgba(62,39,35,0.1)',
+                  }}
                 >
                   <Text
                     style={{
                       fontFamily: isActive ? 'Inter-Bold' : 'Inter-Medium',
-                      fontSize: 13,
+                      fontSize: 12,
                       color: isActive ? '#FFFFFF' : '#6D4C41',
                     }}
                   >
@@ -337,7 +338,7 @@ export default function MarketplaceScreen() {
                 </Pressable>
               );
             })}
-          </ScrollView>
+          </View>
         </View>
 
         {/* Stats strip */}

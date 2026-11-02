@@ -105,6 +105,7 @@ export default function EditCropScreen() {
 
   const isDesktop = width >= 1024;
   const isTablet = width >= 640;
+  const isMobile = width < 640;
 
   const {
     control,
@@ -197,25 +198,25 @@ export default function EditCropScreen() {
           contentContainerClassName="w-full px-5 md:px-8 lg:px-10 xl:px-12 pt-6"
         >
           {/* Top Breadcrumb Navigation */}
-          <View className="flex-row items-center justify-between mb-6 pb-4 border-b border-soil/5">
-            <View className="flex-row items-center gap-3">
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: 'rgba(62,39,35,0.06)' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1, minWidth: 0 }}>
               <Pressable
                 onPress={() => router.back()}
-                className="w-10 h-10 rounded-xl bg-surface items-center justify-center border border-soil/10 hover:bg-surface/80"
+                className="w-10 h-10 rounded-xl bg-surface items-center justify-center border border-soil/10 hover:bg-surface/80 shrink-0"
                 hitSlop={8}
               >
                 <ArrowLeft size={18} color="#3E2723" strokeWidth={2.2} />
               </Pressable>
-              <View>
+              <View style={{ flex: 1, minWidth: 0 }}>
                 <Text
-                  className="text-soil text-2xl lg:text-3xl font-bold"
-                  style={{ fontFamily: 'Inter-Bold' }}
+                  style={{ fontFamily: 'Inter-Bold', fontSize: isMobile ? 20 : 28, color: '#3E2723' }}
+                  numberOfLines={1}
                 >
                   Edit Crop Cycle
                 </Text>
                 <Text
-                  className="text-soil-muted text-xs lg:text-sm mt-0.5"
-                  style={{ fontFamily: 'Inter-Regular' }}
+                  style={{ fontFamily: 'Inter-Regular', fontSize: isMobile ? 12 : 14, color: '#9E9189', marginTop: 2 }}
+                  numberOfLines={isDesktop ? 1 : 2}
                 >
                   Update botanical variety, acreage, lifecycle stage, and harvest yield records
                 </Text>
@@ -456,19 +457,36 @@ export default function EditCropScreen() {
               </View>
 
               {/* Form Actions Row */}
-              <View className="flex-row items-center justify-end gap-3 pt-2">
-                <Button
-                  label="Cancel"
-                  variant="secondary"
-                  onPress={() => router.back()}
-                  className="px-6"
-                />
-                <Button
-                  label={updateCrop.isPending ? 'Saving...' : 'Save Changes'}
-                  onPress={handleSubmit(onSubmit)}
-                  disabled={updateCrop.isPending}
-                  className="px-8 shadow-sm"
-                />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: isMobile ? 'space-between' : 'flex-end',
+                  gap: 12,
+                  width: '100%',
+                  paddingTop: 8,
+                }}
+              >
+                <View style={{ flex: isMobile ? 1 : undefined }}>
+                  <Button
+                    label="Cancel"
+                    variant="secondary"
+                    onPress={() => router.back()}
+                    className={isMobile ? 'w-full' : 'px-6'}
+                    containerStyle={isMobile ? { width: '100%' } : undefined}
+                    textStyle={isMobile ? { fontSize: 14 } : undefined}
+                  />
+                </View>
+                <View style={{ flex: isMobile ? 2 : undefined }}>
+                  <Button
+                    label={updateCrop.isPending ? 'Saving...' : 'Save Changes'}
+                    onPress={handleSubmit(onSubmit)}
+                    disabled={updateCrop.isPending}
+                    className={isMobile ? 'w-full shadow-sm' : 'px-8 shadow-sm'}
+                    containerStyle={isMobile ? { width: '100%' } : undefined}
+                    textStyle={isMobile ? { fontSize: 14 } : undefined}
+                  />
+                </View>
               </View>
             </View>
 

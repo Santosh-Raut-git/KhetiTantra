@@ -30,17 +30,18 @@ import {
 } from 'lucide-react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 
-function AdminMetricCard({ title, value, icon, iconBg, valueColor, subtitle, onPress }) {
+function AdminMetricCard({ title, value, icon, iconBg, valueColor, subtitle, onPress, isMobile }) {
   return (
     <Pressable
       onPress={onPress}
       disabled={!onPress}
       style={{
-        flex: 1,
-        minWidth: 200,
+        width: isMobile ? '47%' : undefined,
+        flex: isMobile ? 1 : 1,
+        minWidth: isMobile ? '45%' : 200,
         backgroundColor: '#FFFFFF',
-        borderRadius: 18,
-        padding: 20,
+        borderRadius: isMobile ? 14 : 18,
+        padding: isMobile ? 12 : 20,
         borderWidth: 1,
         borderColor: 'rgba(62,39,35,0.06)',
         shadowColor: '#3E2723',
@@ -49,12 +50,12 @@ function AdminMetricCard({ title, value, icon, iconBg, valueColor, subtitle, onP
         shadowOffset: { width: 0, height: 2 },
       }}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? 8 : 12 }}>
         <View
           style={{
-            width: 42,
-            height: 42,
-            borderRadius: 13,
+            width: isMobile ? 32 : 42,
+            height: isMobile ? 32 : 42,
+            borderRadius: isMobile ? 10 : 13,
             backgroundColor: iconBg || '#E8F5E9',
             alignItems: 'center',
             justifyContent: 'center',
@@ -63,20 +64,20 @@ function AdminMetricCard({ title, value, icon, iconBg, valueColor, subtitle, onP
           {icon}
         </View>
         {subtitle && (
-          <View style={{ backgroundColor: 'rgba(62,39,35,0.04)', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 }}>
-            <Text style={{ fontFamily: 'Inter-Medium', fontSize: 11, color: '#9E9189' }}>
+          <View style={{ backgroundColor: 'rgba(62,39,35,0.04)', paddingHorizontal: isMobile ? 6 : 8, paddingVertical: 2, borderRadius: 6 }}>
+            <Text style={{ fontFamily: 'Inter-Medium', fontSize: isMobile ? 10 : 11, color: '#9E9189' }}>
               {subtitle}
             </Text>
           </View>
         )}
       </View>
-      <Text style={{ fontFamily: 'Inter-Medium', fontSize: 13, color: '#9E9189', marginBottom: 4 }}>
+      <Text style={{ fontFamily: 'Inter-Medium', fontSize: isMobile ? 11 : 13, color: '#9E9189', marginBottom: isMobile ? 2 : 4 }}>
         {title}
       </Text>
       <Text
         style={{
           fontFamily: 'Inter-Bold',
-          fontSize: 26,
+          fontSize: isMobile ? 18 : 26,
           color: valueColor || '#3E2723',
         }}
         numberOfLines={1}
@@ -105,10 +106,10 @@ export default function AdminDashboardScreen() {
   const netProfit = stats?.netProfit || 0;
 
   return (
-    <SafeAreaView className="flex-1 bg-sand" edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#F5F5F0' }} edges={['top']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 60, width: '100%' }}
+        contentContainerStyle={{ paddingBottom: 80, paddingHorizontal: width >= 768 ? 32 : 16, paddingTop: 20, flexGrow: 1 }}
         contentContainerClassName="w-full px-5 md:px-8 lg:px-10 xl:px-12 pt-6"
         refreshControl={
           <RefreshControl
@@ -153,9 +154,9 @@ export default function AdminDashboardScreen() {
                 </Text>
               </Pressable>
             )}
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginBottom: 4 }}>
               <Text
-                style={{ fontFamily: 'Inter-Bold', fontSize: isMobile ? 24 : 30, color: '#3E2723' }}
+                style={{ fontFamily: 'Inter-Bold', fontSize: isMobile ? 21 : 30, color: '#3E2723' }}
               >
                 Super Admin Overview
               </Text>
@@ -212,7 +213,7 @@ export default function AdminDashboardScreen() {
             marginBottom: 30,
           }}
         >
-          <AdminMetricCard
+          <AdminMetricCard isMobile={isMobile}
             title="Total Registered Users"
             value={(stats?.totalUsers || 0).toString()}
             icon={<Users size={20} color="#2E7D32" strokeWidth={2.2} />}
@@ -220,7 +221,7 @@ export default function AdminDashboardScreen() {
             subtitle="Platform users"
             onPress={() => router.push('/admin/users')}
           />
-          <AdminMetricCard
+          <AdminMetricCard isMobile={isMobile}
             title="Recorded Crop Batches"
             value={(stats?.totalCrops || 0).toString()}
             icon={<Sprout size={20} color="#2E7D32" strokeWidth={2.2} />}
@@ -228,7 +229,7 @@ export default function AdminDashboardScreen() {
             subtitle="All seasons"
             onPress={() => router.push('/admin/crops')}
           />
-          <AdminMetricCard
+          <AdminMetricCard isMobile={isMobile}
             title="Active Harvest Cycles"
             value={(stats?.activeCrops || 0).toString()}
             valueColor="#F57F17"
@@ -237,7 +238,7 @@ export default function AdminDashboardScreen() {
             subtitle="In progress"
             onPress={() => router.push('/admin/crops')}
           />
-          <AdminMetricCard
+          <AdminMetricCard isMobile={isMobile}
             title="Ledger Transactions"
             value={(stats?.totalTransactions || 0).toString()}
             valueColor="#1565C0"
@@ -272,8 +273,8 @@ export default function AdminDashboardScreen() {
               }}
             >
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18, paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: 'rgba(62,39,35,0.06)' }}>
-                <View>
-                  <Text style={{ fontFamily: 'Inter-Bold', fontSize: 18, color: '#3E2723' }}>
+                <View style={{ flex: 1, marginRight: 8 }}>
+                  <Text style={{ fontFamily: 'Inter-Bold', fontSize: isMobile ? 16 : 18, color: '#3E2723' }}>
                     Financial Summary & Platform Volume
                   </Text>
                   <Text style={{ fontFamily: 'Inter-Regular', fontSize: 12, color: '#9E9189', marginTop: 2 }}>
@@ -394,7 +395,7 @@ export default function AdminDashboardScreen() {
                         ? Math.min(100, Math.round(((stats?.totalIncome || 0) / ((stats?.totalIncome || 0) + (stats?.totalExpense || 0))) * 100))
                         : 50}%`,
                       backgroundColor: '#2E7D32',
-                      height: '100%',
+                      height: Platform.OS === 'web' ? '100%' : undefined,
                     }}
                   />
                 </View>

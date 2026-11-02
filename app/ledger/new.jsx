@@ -72,6 +72,7 @@ export default function AddTransactionScreen() {
   const { width } = useWindowDimensions();
   const isDesktop = width >= 1024;
   const isTablet = width >= 640;
+  const isMobile = width < 640;
 
   const [receiptBase64, setReceiptBase64] = useState(null);
   const [receiptUri, setReceiptUri] = useState(null);
@@ -160,25 +161,25 @@ export default function AddTransactionScreen() {
           contentContainerClassName="w-full px-5 md:px-8 lg:px-10 xl:px-12 pt-6"
         >
           {/* Top Breadcrumb Header */}
-          <View className="flex-row items-center justify-between mb-6 pb-4 border-b border-soil/5">
-            <View className="flex-row items-center gap-3">
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: 'rgba(62,39,35,0.06)' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1, minWidth: 0 }}>
               <Pressable
                 onPress={() => router.back()}
-                className="w-10 h-10 rounded-xl bg-surface items-center justify-center border border-soil/10 hover:bg-surface/80"
+                className="w-10 h-10 rounded-xl bg-surface items-center justify-center border border-soil/10 hover:bg-surface/80 shrink-0"
                 hitSlop={8}
               >
                 <ArrowLeft size={18} color="#3E2723" strokeWidth={2.2} />
               </Pressable>
-              <View>
+              <View style={{ flex: 1, minWidth: 0 }}>
                 <Text
-                  className="text-soil text-2xl lg:text-3xl font-bold"
-                  style={{ fontFamily: 'Inter-Bold' }}
+                  style={{ fontFamily: 'Inter-Bold', fontSize: isMobile ? 20 : 28, color: '#3E2723' }}
+                  numberOfLines={1}
                 >
                   Record Farm Transaction
                 </Text>
                 <Text
-                  className="text-soil-muted text-xs lg:text-sm mt-0.5"
-                  style={{ fontFamily: 'Inter-Regular' }}
+                  style={{ fontFamily: 'Inter-Regular', fontSize: isMobile ? 12 : 14, color: '#9E9189', marginTop: 2 }}
+                  numberOfLines={isDesktop ? 1 : 2}
                 >
                   Log production costs, seed procurement, and harvest revenue
                 </Text>
@@ -217,51 +218,107 @@ export default function AddTransactionScreen() {
                   control={control}
                   name="type"
                   render={({ field: { onChange, value } }) => (
-                    <View className="flex-row w-full mb-6 bg-sand/80 p-1.5 rounded-2xl border border-soil/5 gap-2">
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        width: '100%',
+                        marginBottom: 24,
+                        backgroundColor: '#EFEBE9',
+                        padding: 5,
+                        borderRadius: 16,
+                        borderWidth: 1,
+                        borderColor: 'rgba(62,39,35,0.06)',
+                        gap: 8,
+                      }}
+                    >
                       <Pressable
                         onPress={() => onChange('expense')}
-                        className={`flex-1 py-3 rounded-xl flex-row items-center justify-center gap-2 transition-all ${
-                          value === 'expense'
-                            ? 'bg-clay shadow-sm'
-                            : 'bg-transparent hover:bg-soil/5'
-                        }`}
+                        style={{
+                          flex: 1,
+                          paddingVertical: isMobile ? 11 : 12,
+                          paddingHorizontal: isMobile ? 8 : 16,
+                          borderRadius: 12,
+                          backgroundColor: value === 'expense' ? '#D32F2F' : 'transparent',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: isMobile ? 6 : 8,
+                          shadowColor: value === 'expense' ? '#D32F2F' : 'transparent',
+                          shadowOpacity: value === 'expense' ? 0.25 : 0,
+                          shadowRadius: 4,
+                          elevation: value === 'expense' ? 2 : 0,
+                        }}
                       >
                         <TrendingDown
-                          size={18}
-                          color={value === 'expense' ? '#FFFFFF' : '#3E2723'}
+                          size={isMobile ? 16 : 18}
+                          color={value === 'expense' ? '#FFFFFF' : '#D32F2F'}
                           strokeWidth={2.4}
                         />
-                        <Text
-                          className={`font-bold text-sm ${
-                            value === 'expense' ? 'text-white' : 'text-soil'
-                          }`}
-                          style={{ fontFamily: 'Inter-Bold' }}
-                        >
-                          Farm Expense (Debit)
-                        </Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 4 }}>
+                          <Text
+                            style={{
+                              fontFamily: 'Inter-Bold',
+                              fontSize: isMobile ? 13 : 14,
+                              color: value === 'expense' ? '#FFFFFF' : '#3E2723',
+                            }}
+                          >
+                            {isMobile ? 'Expense' : 'Farm Expense'}
+                          </Text>
+                          <Text
+                            style={{
+                              fontFamily: 'Inter-Medium',
+                              fontSize: isMobile ? 11 : 13,
+                              color: value === 'expense' ? 'rgba(255,255,255,0.85)' : '#9E9189',
+                            }}
+                          >
+                            (Debit)
+                          </Text>
+                        </View>
                       </Pressable>
 
                       <Pressable
                         onPress={() => onChange('income')}
-                        className={`flex-1 py-3 rounded-xl flex-row items-center justify-center gap-2 transition-all ${
-                          value === 'income'
-                            ? 'bg-leaf shadow-sm'
-                            : 'bg-transparent hover:bg-soil/5'
-                        }`}
+                        style={{
+                          flex: 1,
+                          paddingVertical: isMobile ? 11 : 12,
+                          paddingHorizontal: isMobile ? 8 : 16,
+                          borderRadius: 12,
+                          backgroundColor: value === 'income' ? '#2E7D32' : 'transparent',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: isMobile ? 6 : 8,
+                          shadowColor: value === 'income' ? '#2E7D32' : 'transparent',
+                          shadowOpacity: value === 'income' ? 0.25 : 0,
+                          shadowRadius: 4,
+                          elevation: value === 'income' ? 2 : 0,
+                        }}
                       >
                         <TrendingUp
-                          size={18}
-                          color={value === 'income' ? '#FFFFFF' : '#3E2723'}
+                          size={isMobile ? 16 : 18}
+                          color={value === 'income' ? '#FFFFFF' : '#2E7D32'}
                           strokeWidth={2.4}
                         />
-                        <Text
-                          className={`font-bold text-sm ${
-                            value === 'income' ? 'text-white' : 'text-soil'
-                          }`}
-                          style={{ fontFamily: 'Inter-Bold' }}
-                        >
-                          Farm Income (Credit)
-                        </Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 4 }}>
+                          <Text
+                            style={{
+                              fontFamily: 'Inter-Bold',
+                              fontSize: isMobile ? 13 : 14,
+                              color: value === 'income' ? '#FFFFFF' : '#3E2723',
+                            }}
+                          >
+                            {isMobile ? 'Income' : 'Farm Income'}
+                          </Text>
+                          <Text
+                            style={{
+                              fontFamily: 'Inter-Medium',
+                              fontSize: isMobile ? 11 : 13,
+                              color: value === 'income' ? 'rgba(255,255,255,0.85)' : '#9E9189',
+                            }}
+                          >
+                            (Credit)
+                          </Text>
+                        </View>
                       </Pressable>
                     </View>
                   )}
@@ -368,20 +425,40 @@ export default function AddTransactionScreen() {
                 </View>
 
                 {/* Form Buttons */}
-                <View className="flex-row items-center justify-end gap-3 pt-6 mt-4 border-t border-soil/5">
-                  <Button
-                    label="Cancel"
-                    variant="secondary"
-                    onPress={() => router.back()}
-                    className="px-6"
-                  />
-                  <Button
-                    label={isUploading ? 'Registering...' : 'Save Transaction'}
-                    onPress={handleSubmit(onSubmit)}
-                    disabled={isUploading || isAnalyzing}
-                    className="px-8 shadow-sm"
-                    variant={watchType === 'expense' ? 'danger' : 'primary'}
-                  />
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: isMobile ? 'space-between' : 'flex-end',
+                    gap: 12,
+                    width: '100%',
+                    paddingTop: 20,
+                    marginTop: 16,
+                    borderTopWidth: 1,
+                    borderTopColor: 'rgba(62,39,35,0.05)',
+                  }}
+                >
+                  <View style={{ flex: isMobile ? 1 : undefined }}>
+                    <Button
+                      label="Cancel"
+                      variant="secondary"
+                      onPress={() => router.back()}
+                      className={isMobile ? 'w-full' : 'px-6'}
+                      containerStyle={isMobile ? { width: '100%' } : undefined}
+                      textStyle={isMobile ? { fontSize: 14 } : undefined}
+                    />
+                  </View>
+                  <View style={{ flex: isMobile ? 2 : undefined }}>
+                    <Button
+                      label={isUploading ? 'Registering...' : 'Save Transaction'}
+                      onPress={handleSubmit(onSubmit)}
+                      disabled={isUploading || isAnalyzing}
+                      className={isMobile ? 'w-full shadow-sm' : 'px-8 shadow-sm'}
+                      containerStyle={isMobile ? { width: '100%' } : undefined}
+                      variant={watchType === 'expense' ? 'danger' : 'primary'}
+                      textStyle={isMobile ? { fontSize: 14 } : undefined}
+                    />
+                  </View>
                 </View>
               </View>
             </View>

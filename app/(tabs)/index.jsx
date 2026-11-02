@@ -65,15 +65,16 @@ const CAT_COLORS = {
   Other: { bg: '#F5F5F5', text: '#6D4C41' },
 };
 
-function MetricCard({ title, value, icon, iconBg, valueColor, subtitle }) {
+function MetricCard({ title, value, icon, iconBg, valueColor, subtitle, isMobile }) {
   return (
     <View
       style={{
-        flex: 1,
-        minWidth: 200,
+        width: isMobile ? '47%' : undefined,
+        flex: isMobile ? 1 : 1,
+        minWidth: isMobile ? '45%' : 200,
         backgroundColor: '#FFFFFF',
-        borderRadius: 18,
-        padding: 20,
+        borderRadius: isMobile ? 14 : 18,
+        padding: isMobile ? 12 : 20,
         borderWidth: 1,
         borderColor: 'rgba(62,39,35,0.06)',
         shadowColor: '#3E2723',
@@ -82,12 +83,12 @@ function MetricCard({ title, value, icon, iconBg, valueColor, subtitle }) {
         shadowOffset: { width: 0, height: 2 },
       }}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? 8 : 14 }}>
         <View
           style={{
-            width: 42,
-            height: 42,
-            borderRadius: 13,
+            width: isMobile ? 32 : 42,
+            height: isMobile ? 32 : 42,
+            borderRadius: isMobile ? 10 : 13,
             backgroundColor: iconBg || '#E8F5E9',
             alignItems: 'center',
             justifyContent: 'center',
@@ -96,18 +97,18 @@ function MetricCard({ title, value, icon, iconBg, valueColor, subtitle }) {
           {icon}
         </View>
         {subtitle && (
-          <Text style={{ fontFamily: 'Inter-Medium', fontSize: 11, color: '#9E9189' }}>
+          <Text style={{ fontFamily: 'Inter-Medium', fontSize: isMobile ? 10 : 11, color: '#9E9189' }}>
             {subtitle}
           </Text>
         )}
       </View>
-      <Text style={{ fontFamily: 'Inter-Medium', fontSize: 12, color: '#9E9189', marginBottom: 4 }}>
+      <Text style={{ fontFamily: 'Inter-Medium', fontSize: isMobile ? 11 : 12, color: '#9E9189', marginBottom: isMobile ? 2 : 4 }}>
         {title}
       </Text>
       <Text
         style={{
           fontFamily: 'Inter-Bold',
-          fontSize: 22,
+          fontSize: isMobile ? 18 : 22,
           color: valueColor || '#3E2723',
         }}
         numberOfLines={1}
@@ -187,19 +188,18 @@ function CategoryChip({ label, isActive, onPress }) {
         onPressIn={() => { scale.value = withSpring(0.93, { damping: 15, stiffness: 500 }); }}
         onPressOut={() => { scale.value = withSpring(1, { damping: 15, stiffness: 500 }); }}
         style={{
-          paddingHorizontal: 14,
-          paddingVertical: 7,
-          borderRadius: 999,
+          paddingHorizontal: 12,
+          paddingVertical: 6.5,
+          borderRadius: 10,
           borderWidth: 1,
           backgroundColor: isActive ? '#2E7D32' : '#FFFFFF',
           borderColor: isActive ? '#2E7D32' : 'rgba(62,39,35,0.1)',
-          marginRight: 8,
         }}
       >
         <Text
           style={{
             fontFamily: isActive ? 'Inter-Bold' : 'Inter-Medium',
-            fontSize: 13,
+            fontSize: 12,
             color: isActive ? '#FFFFFF' : '#6D4C41',
           }}
         >
@@ -231,7 +231,7 @@ function FeedListingCard({ listing, index, onPress, cardWidth }) {
           borderWidth: 1,
           borderColor: 'rgba(62,39,35,0.06)',
           padding: 16,
-          height: '100%',
+          height: Platform.OS === 'web' ? '100%' : undefined,
           minHeight: 180,
           display: 'flex',
           flexDirection: 'column',
@@ -397,6 +397,7 @@ export default function DashboardScreen() {
 
   const role = profile?.role || session?.user?.user_metadata?.role || 'farmer';
   const isRetailer = role === 'retailer';
+  const isMobile = width < 640;
   const defaultTitle = isRetailer ? 'Retailer' : 'Farmer';
 
   const rawName =
@@ -407,10 +408,10 @@ export default function DashboardScreen() {
   const displayName = rawName || defaultTitle;
 
   return (
-    <SafeAreaView className="flex-1 bg-sand" edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#F5F5F0' }} edges={['top']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 60, width: '100%' }}
+        contentContainerStyle={{ paddingBottom: 80, paddingHorizontal: width >= 768 ? 32 : 16, paddingTop: 20, flexGrow: 1 }}
         contentContainerClassName="w-full px-5 md:px-8 lg:px-10 xl:px-12 pt-6"
         refreshControl={
           <RefreshControl refreshing={false} onRefresh={onRefresh} colors={['#2E7D32']} />
@@ -496,7 +497,7 @@ export default function DashboardScreen() {
         >
           {!isRetailer ? (
             <>
-              <MetricCard
+              <MetricCard isMobile={isMobile}
                 title="Net Balance"
                 value={`₹${netProfit.toLocaleString('en-IN')}`}
                 valueColor={netProfit >= 0 ? '#2E7D32' : '#D32F2F'}
@@ -504,7 +505,7 @@ export default function DashboardScreen() {
                 iconBg="#E8F5E9"
                 subtitle={netProfit >= 0 ? 'Profitable' : 'Loss'}
               />
-              <MetricCard
+              <MetricCard isMobile={isMobile}
                 title="Active Crops"
                 value={activeCropsCount.toString()}
                 valueColor="#3E2723"
@@ -512,14 +513,14 @@ export default function DashboardScreen() {
                 iconBg="#E8F5E9"
                 subtitle={`${crops?.length || 0} total`}
               />
-              <MetricCard
+              <MetricCard isMobile={isMobile}
                 title="Total Income"
                 value={`₹${totalIncome.toLocaleString('en-IN')}`}
                 valueColor="#2E7D32"
                 icon={<TrendingUp size={20} color="#2E7D32" />}
                 iconBg="#E8F5E9"
               />
-              <MetricCard
+              <MetricCard isMobile={isMobile}
                 title="Total Expense"
                 value={`₹${totalExpense.toLocaleString('en-IN')}`}
                 valueColor="#D32F2F"
@@ -529,7 +530,7 @@ export default function DashboardScreen() {
             </>
           ) : (
             <>
-              <MetricCard
+              <MetricCard isMobile={isMobile}
                 title="Available Produce"
                 value={(mktStats?.totalActive || listings?.length || 0).toString()}
                 valueColor="#2E7D32"
@@ -537,7 +538,7 @@ export default function DashboardScreen() {
                 iconBg="#E8F5E9"
                 subtitle="Live wholesale"
               />
-              <MetricCard
+              <MetricCard isMobile={isMobile}
                 title="Crop Categories"
                 value={(mktStats?.priceTrends?.length || 6).toString()}
                 valueColor="#3E2723"
@@ -545,7 +546,7 @@ export default function DashboardScreen() {
                 iconBg="#FFF8E1"
                 subtitle="Active commodities"
               />
-              <MetricCard
+              <MetricCard isMobile={isMobile}
                 title="New Listings (7d)"
                 value={(mktStats?.recentCount || 0).toString()}
                 valueColor="#1565C0"
@@ -553,7 +554,7 @@ export default function DashboardScreen() {
                 iconBg="#E3F2FD"
                 subtitle="Fresh arrivals"
               />
-              <MetricCard
+              <MetricCard isMobile={isMobile}
                 title="AI Assistant"
                 value="Active"
                 valueColor="#2E7D32"
@@ -630,11 +631,14 @@ export default function DashboardScreen() {
               </View>
             </View>
 
-            {/* Category Pills */}
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingBottom: 16 }}
+            {/* Category Pills - Wrapped to fit screen without scrolling */}
+            <View
+              style={{
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                gap: 6,
+                paddingBottom: 16,
+              }}
             >
               {CATEGORIES.map((cat) => (
                 <CategoryChip
@@ -644,7 +648,7 @@ export default function DashboardScreen() {
                   onPress={() => setActiveCategory(cat)}
                 />
               ))}
-            </ScrollView>
+            </View>
 
             {/* 2-Column Listing Cards Feed */}
             {listingsLoading ? (

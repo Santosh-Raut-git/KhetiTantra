@@ -6,6 +6,7 @@ import {
   Pressable,
   ActivityIndicator,
   useWindowDimensions,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Plus, Sprout, ChevronRight, CheckCircle2, Calendar, MapPin } from 'lucide-react-native';
@@ -45,7 +46,7 @@ function CropCard({ crop, index, netProfit, onPress, cardWidth }) {
           shadowOpacity: 0.04,
           shadowRadius: 8,
           shadowOffset: { width: 0, height: 2 },
-          height: '100%',
+          height: Platform.OS === 'web' ? '100%' : undefined,
           minHeight: 190,
         }}
       >
@@ -143,6 +144,7 @@ export default function CropsScreen() {
   const { data: cropProfits } = useCropProfits();
   const { width } = useWindowDimensions();
 
+  const isMobile = width < 640;
   const numColumns = width >= 1440 ? 4 : width >= 1024 ? 3 : width >= 640 ? 2 : 1;
   const cardWidth = `${100 / numColumns}%`;
 
@@ -173,10 +175,10 @@ export default function CropsScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-sand" edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#F5F5F0' }} edges={['top']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 60, width: '100%' }}
+        contentContainerStyle={{ paddingBottom: 80, paddingHorizontal: width >= 768 ? 32 : 16, paddingTop: 20, flexGrow: 1 }}
         contentContainerClassName="w-full px-5 md:px-8 lg:px-10 xl:px-12 pt-6"
       >
         {/* Desktop Header Banner */}
@@ -212,45 +214,97 @@ export default function CropsScreen() {
         </View>
 
         {/* 3 Overview Metric Cards */}
-        <View className="flex-row flex-wrap gap-4 mb-8">
-          <View className="bg-surface rounded-2xl p-5 border border-soil/5 shadow-sm flex-1 min-w-[160px]">
-            <View className="flex-row items-center justify-between mb-2">
-              <Text className="text-soil-muted text-xs" style={{ fontFamily: 'Inter-Medium' }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            gap: isMobile ? 10 : 16,
+            marginBottom: isMobile ? 20 : 32,
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: isMobile ? 14 : 16,
+              padding: isMobile ? 12 : 20,
+              borderWidth: 1,
+              borderColor: 'rgba(62,39,35,0.06)',
+              shadowColor: '#3E2723',
+              shadowOpacity: 0.04,
+              shadowRadius: 8,
+              shadowOffset: { width: 0, height: 2 },
+              width: isMobile ? '47%' : undefined,
+              flex: isMobile ? 1 : 1,
+              minWidth: isMobile ? '45%' : 160,
+            }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? 4 : 8 }}>
+              <Text style={{ fontFamily: 'Inter-Medium', fontSize: isMobile ? 11 : 12, color: '#9E9189' }}>
                 Active Cycles
               </Text>
-              <View className="w-8 h-8 rounded-lg bg-leaf/10 items-center justify-center">
-                <Sprout size={16} color="#2E7D32" strokeWidth={2} />
+              <View style={{ width: isMobile ? 28 : 32, height: isMobile ? 28 : 32, borderRadius: 8, backgroundColor: '#E8F5E9', alignItems: 'center', justifyContent: 'center' }}>
+                <Sprout size={isMobile ? 14 : 16} color="#2E7D32" strokeWidth={2} />
               </View>
             </View>
-            <Text className="text-soil text-2xl font-bold" style={{ fontFamily: 'Inter-Bold' }}>
+            <Text style={{ fontFamily: 'Inter-Bold', fontSize: isMobile ? 18 : 24, color: '#3E2723' }}>
               {activeCropsCount}
             </Text>
           </View>
 
-          <View className="bg-surface rounded-2xl p-5 border border-soil/5 shadow-sm flex-1 min-w-[160px]">
-            <View className="flex-row items-center justify-between mb-2">
-              <Text className="text-soil-muted text-xs" style={{ fontFamily: 'Inter-Medium' }}>
+          <View
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: isMobile ? 14 : 16,
+              padding: isMobile ? 12 : 20,
+              borderWidth: 1,
+              borderColor: 'rgba(62,39,35,0.06)',
+              shadowColor: '#3E2723',
+              shadowOpacity: 0.04,
+              shadowRadius: 8,
+              shadowOffset: { width: 0, height: 2 },
+              width: isMobile ? '47%' : undefined,
+              flex: isMobile ? 1 : 1,
+              minWidth: isMobile ? '45%' : 160,
+            }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? 4 : 8 }}>
+              <Text style={{ fontFamily: 'Inter-Medium', fontSize: isMobile ? 11 : 12, color: '#9E9189' }}>
                 Cultivated Land
               </Text>
-              <View className="w-8 h-8 rounded-lg bg-harvest/10 items-center justify-center">
-                <MapPin size={16} color="#F57F17" strokeWidth={2} />
+              <View style={{ width: isMobile ? 28 : 32, height: isMobile ? 28 : 32, borderRadius: 8, backgroundColor: '#FFF8E1', alignItems: 'center', justifyContent: 'center' }}>
+                <MapPin size={isMobile ? 14 : 16} color="#F57F17" strokeWidth={2} />
               </View>
             </View>
-            <Text className="text-soil text-2xl font-bold" style={{ fontFamily: 'Inter-Bold' }}>
-              {totalLandAcres.toFixed(1)} <Text className="text-sm font-normal text-soil-muted">Acres</Text>
+            <Text style={{ fontFamily: 'Inter-Bold', fontSize: isMobile ? 18 : 24, color: '#3E2723' }}>
+              {totalLandAcres.toFixed(1)} <Text style={{ fontSize: isMobile ? 11 : 14, fontFamily: 'Inter-Regular', color: '#9E9189' }}>Acres</Text>
             </Text>
           </View>
 
-          <View className="bg-surface rounded-2xl p-5 border border-soil/5 shadow-sm flex-1 min-w-[160px]">
-            <View className="flex-row items-center justify-between mb-2">
-              <Text className="text-soil-muted text-xs" style={{ fontFamily: 'Inter-Medium' }}>
+          <View
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: isMobile ? 14 : 16,
+              padding: isMobile ? 12 : 20,
+              borderWidth: 1,
+              borderColor: 'rgba(62,39,35,0.06)',
+              shadowColor: '#3E2723',
+              shadowOpacity: 0.04,
+              shadowRadius: 8,
+              shadowOffset: { width: 0, height: 2 },
+              width: isMobile ? '100%' : undefined,
+              flex: isMobile ? undefined : 1,
+              minWidth: isMobile ? '100%' : 160,
+            }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? 4 : 8 }}>
+              <Text style={{ fontFamily: 'Inter-Medium', fontSize: isMobile ? 11 : 12, color: '#9E9189' }}>
                 Completed Harvests
               </Text>
-              <View className="w-8 h-8 rounded-lg bg-leaf/10 items-center justify-center">
-                <CheckCircle2 size={16} color="#2E7D32" strokeWidth={2} />
+              <View style={{ width: isMobile ? 28 : 32, height: isMobile ? 28 : 32, borderRadius: 8, backgroundColor: '#E8F5E9', alignItems: 'center', justifyContent: 'center' }}>
+                <CheckCircle2 size={isMobile ? 14 : 16} color="#2E7D32" strokeWidth={2} />
               </View>
             </View>
-            <Text className="text-soil text-2xl font-bold" style={{ fontFamily: 'Inter-Bold' }}>
+            <Text style={{ fontFamily: 'Inter-Bold', fontSize: isMobile ? 18 : 24, color: '#3E2723' }}>
               {harvestedCount}
             </Text>
           </View>
@@ -283,7 +337,7 @@ export default function CropsScreen() {
                 <Pressable
                   onPress={() => router.push('/crops/new')}
                   className="w-full border-2 border-dashed border-soil/15 rounded-2xl p-6 items-center justify-center bg-surface/50 hover:bg-surface hover:border-leaf/50 transition-all"
-                  style={{ height: '100%', minHeight: 190 }}
+                  style={{ minHeight: 180, height: Platform.OS === 'web' ? '100%' : undefined }}
                 >
                   <View className="w-12 h-12 rounded-full bg-leaf/10 items-center justify-center mb-3">
                     <Plus size={22} color="#2E7D32" strokeWidth={2.2} />

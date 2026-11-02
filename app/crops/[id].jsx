@@ -7,6 +7,7 @@ import {
   Alert,
   Pressable,
   Platform,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -31,6 +32,8 @@ import { getStatusColor, getStatusBg } from '@/lib/utils';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 
 export default function CropDetailsScreen() {
+  const { width } = useWindowDimensions();
+  const isMobile = width < 640;
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const { data: crop, isLoading } = useCrop(id);
@@ -88,20 +91,20 @@ export default function CropDetailsScreen() {
         contentContainerClassName="w-full px-5 md:px-8 lg:px-10 xl:px-12 pt-6"
       >
         {/* Top Header Banner */}
-        <View className="flex-row items-center justify-between mb-8 pb-5 border-b border-soil/5">
-          <View className="flex-row items-center gap-3">
+        <View style={{ flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center', justifyContent: 'space-between', gap: 14, marginBottom: 24, paddingBottom: 18, borderBottomWidth: 1, borderBottomColor: 'rgba(62,39,35,0.06)' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
             <Pressable
               onPress={() => router.back()}
-              className="w-10 h-10 rounded-xl bg-surface items-center justify-center border border-soil/10 hover:bg-surface/80"
+              className="w-10 h-10 rounded-xl bg-surface items-center justify-center border border-soil/10 hover:bg-surface/80 shrink-0"
               hitSlop={8}
             >
               <ArrowLeft size={18} color="#3E2723" strokeWidth={2.2} />
             </Pressable>
-            <View>
-              <View className="flex-row items-center gap-3">
+            <View style={{ flex: 1, minWidth: 0 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                 <Text
-                  className="text-soil text-2xl lg:text-3xl font-bold"
-                  style={{ fontFamily: 'Inter-Bold' }}
+                  style={{ fontFamily: 'Inter-Bold', fontSize: isMobile ? 22 : 28, color: '#3E2723' }}
+                  numberOfLines={1}
                 >
                   {crop.crop_name}
                 </Text>
@@ -114,31 +117,48 @@ export default function CropDetailsScreen() {
               <Text
                 className="text-soil-muted text-xs lg:text-sm mt-0.5"
                 style={{ fontFamily: 'Inter-Regular' }}
+                numberOfLines={1}
               >
                 {crop.season} Season {crop.variety ? `• Variety: ${crop.variety}` : ''}
               </Text>
             </View>
           </View>
 
-          <View className="flex-row items-center gap-3">
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, alignSelf: isMobile ? 'flex-end' : 'auto' }}>
             <Pressable
               onPress={() => router.push(`/crops/${id}/edit`)}
-              className="flex-row items-center bg-leaf/10 border border-leaf/20 px-4 py-2.5 rounded-xl hover:bg-leaf/20"
-              style={{ minHeight: 40 }}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: '#E8F5E9',
+                borderWidth: 1,
+                borderColor: 'rgba(46,125,50,0.2)',
+                paddingHorizontal: 14,
+                paddingVertical: 8,
+                borderRadius: 12,
+              }}
             >
-              <Edit2 size={16} color="#2E7D32" strokeWidth={2} />
-              <Text className="text-leaf font-bold ml-2 text-sm" style={{ fontFamily: 'Inter-Bold' }}>
+              <Edit2 size={15} color="#2E7D32" strokeWidth={2} />
+              <Text style={{ fontFamily: 'Inter-Bold', fontSize: 13, color: '#2E7D32', marginLeft: 6 }}>
                 Edit Crop
               </Text>
             </Pressable>
 
             <Pressable
               onPress={handleDelete}
-              className="flex-row items-center bg-clay/10 border border-clay/20 px-4 py-2.5 rounded-xl hover:bg-clay/20"
-              style={{ minHeight: 40 }}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: '#FFEBEE',
+                borderWidth: 1,
+                borderColor: 'rgba(211,47,47,0.2)',
+                paddingHorizontal: 14,
+                paddingVertical: 8,
+                borderRadius: 12,
+              }}
             >
-              <Trash2 size={16} color="#D32F2F" strokeWidth={2} />
-              <Text className="text-clay font-bold ml-2 text-sm" style={{ fontFamily: 'Inter-Bold' }}>
+              <Trash2 size={15} color="#D32F2F" strokeWidth={2} />
+              <Text style={{ fontFamily: 'Inter-Bold', fontSize: 13, color: '#D32F2F', marginLeft: 6 }}>
                 Delete
               </Text>
             </Pressable>
@@ -214,14 +234,14 @@ export default function CropDetailsScreen() {
               }}
             >
               <View className="flex-row items-center gap-3 mb-6 pb-4 border-b border-soil/5">
-                <View className="w-10 h-10 rounded-xl bg-leaf/10 items-center justify-center border border-leaf/15">
+                <View className="w-10 h-10 rounded-xl bg-leaf/10 items-center justify-center border border-leaf/15 shrink-0">
                   <Calendar size={20} color="#2E7D32" strokeWidth={2} />
                 </View>
-                <View>
-                  <Text className="text-soil text-lg font-bold" style={{ fontFamily: 'Inter-Bold' }}>
+                <View style={{ flex: 1, minWidth: 0 }}>
+                  <Text style={{ fontFamily: 'Inter-Bold', fontSize: isMobile ? 16 : 18, color: '#3E2723' }} numberOfLines={1}>
                     Cultivation Timeline & Yield
                   </Text>
-                  <Text className="text-soil-muted text-xs" style={{ fontFamily: 'Inter-Regular' }}>
+                  <Text style={{ fontFamily: 'Inter-Regular', fontSize: isMobile ? 11 : 12, color: '#9E9189', marginTop: 2 }} numberOfLines={isMobile ? 2 : 1}>
                     Recorded milestones from planting through harvest completion
                   </Text>
                 </View>
@@ -288,16 +308,16 @@ export default function CropDetailsScreen() {
                 shadowRadius: 8,
               }}
             >
-              <View className="flex-row items-center justify-between mb-6 pb-4 border-b border-soil/5">
-                <View className="flex-row items-center gap-3">
-                  <View className="w-10 h-10 rounded-xl bg-harvest/10 items-center justify-center border border-harvest/15">
+              <View style={{ flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center', justifyContent: 'space-between', gap: 12, marginBottom: 20, paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: 'rgba(62,39,35,0.06)' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
+                  <View className="w-10 h-10 rounded-xl bg-harvest/10 items-center justify-center border border-harvest/15 shrink-0">
                     <Wallet size={20} color="#F57F17" strokeWidth={2} />
                   </View>
-                  <View>
-                    <Text className="text-soil text-lg font-bold" style={{ fontFamily: 'Inter-Bold' }}>
+                  <View style={{ flex: 1, minWidth: 0 }}>
+                    <Text style={{ fontFamily: 'Inter-Bold', fontSize: isMobile ? 16 : 18, color: '#3E2723' }} numberOfLines={1}>
                       Crop Financial Performance
                     </Text>
-                    <Text className="text-soil-muted text-xs" style={{ fontFamily: 'Inter-Regular' }}>
+                    <Text style={{ fontFamily: 'Inter-Regular', fontSize: isMobile ? 11 : 12, color: '#9E9189', marginTop: 2 }} numberOfLines={isMobile ? 2 : 1}>
                       Live calculated revenues and input expenses mapped to this crop batch
                     </Text>
                   </View>
@@ -306,6 +326,7 @@ export default function CropDetailsScreen() {
                 <Pressable
                   onPress={() => router.push('/ledger/new')}
                   className="flex-row items-center bg-leaf/10 border border-leaf/20 px-3 py-1.5 rounded-lg hover:bg-leaf/20"
+                  style={{ alignSelf: isMobile ? 'flex-start' : 'auto' }}
                 >
                   <Plus size={14} color="#2E7D32" strokeWidth={2.4} />
                   <Text className="text-leaf text-xs font-bold ml-1.5" style={{ fontFamily: 'Inter-Bold' }}>

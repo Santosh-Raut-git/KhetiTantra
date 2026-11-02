@@ -34,6 +34,7 @@ export default function AdminTransactionsScreen() {
   const { data: transactions, isLoading, refetch } = useAdminTransactions();
   const deleteTransaction = useDeleteTransactionAdmin();
   const { width } = useWindowDimensions();
+  const isMobile = width < 640;
   const numColumns = width >= 1440 ? 4 : width >= 1024 ? 3 : width >= 640 ? 2 : 1;
   const cardWidth = `${100 / numColumns}%`;
 
@@ -109,10 +110,10 @@ export default function AdminTransactionsScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-sand" edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#F5F5F0' }} edges={['top']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 60, width: '100%' }}
+        contentContainerStyle={{ paddingBottom: 80, paddingHorizontal: width >= 768 ? 32 : 16, paddingTop: 20, flexGrow: 1 }}
         contentContainerClassName="w-full px-5 md:px-8 lg:px-10 xl:px-12 pt-6"
         refreshControl={
           <RefreshControl
@@ -138,7 +139,7 @@ export default function AdminTransactionsScreen() {
         >
           <View>
             <Text
-              style={{ fontFamily: 'Inter-Bold', fontSize: 28, color: '#3E2723' }}
+              style={{ fontFamily: 'Inter-Bold', fontSize: isMobile ? 21 : 28, color: '#3E2723' }}
             >
               Platform Financial Ledger
             </Text>
@@ -151,46 +152,46 @@ export default function AdminTransactionsScreen() {
         </View>
 
         {/* 4 Summary Metric Cards */}
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 14, marginBottom: 24 }}>
-          <View style={{ flex: 1, minWidth: 160, backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: 'rgba(62,39,35,0.06)', shadowColor: '#3E2723', shadowOpacity: 0.03, shadowRadius: 6 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-              <Text style={{ fontFamily: 'Inter-Medium', fontSize: 12, color: '#9E9189' }}>Total Volume</Text>
-              <Receipt size={16} color="#3E2723" />
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: isMobile ? 10 : 14, marginBottom: isMobile ? 18 : 24 }}>
+          <View style={{ width: isMobile ? '47%' : undefined, flex: isMobile ? 1 : 1, minWidth: isMobile ? '45%' : 160, backgroundColor: '#FFFFFF', borderRadius: isMobile ? 14 : 16, padding: isMobile ? 12 : 16, borderWidth: 1, borderColor: 'rgba(62,39,35,0.06)', shadowColor: '#3E2723', shadowOpacity: 0.03, shadowRadius: 6 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? 4 : 6 }}>
+              <Text style={{ fontFamily: 'Inter-Medium', fontSize: isMobile ? 11 : 12, color: '#9E9189' }}>Total Volume</Text>
+              <Receipt size={isMobile ? 14 : 16} color="#3E2723" />
             </View>
-            <Text style={{ fontFamily: 'Inter-Bold', fontSize: 24, color: '#3E2723' }}>
+            <Text style={{ fontFamily: 'Inter-Bold', fontSize: isMobile ? 20 : 24, color: '#3E2723' }}>
               {transactions?.length || 0}
             </Text>
           </View>
 
-          <View style={{ flex: 1, minWidth: 160, backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: 'rgba(62,39,35,0.06)', shadowColor: '#3E2723', shadowOpacity: 0.03, shadowRadius: 6 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-              <Text style={{ fontFamily: 'Inter-Medium', fontSize: 12, color: '#9E9189' }}>Gross Inflow (Income)</Text>
-              <TrendingUp size={16} color="#2E7D32" />
+          <View style={{ width: isMobile ? '47%' : undefined, flex: isMobile ? 1 : 1, minWidth: isMobile ? '45%' : 160, backgroundColor: '#FFFFFF', borderRadius: isMobile ? 14 : 16, padding: isMobile ? 12 : 16, borderWidth: 1, borderColor: 'rgba(62,39,35,0.06)', shadowColor: '#3E2723', shadowOpacity: 0.03, shadowRadius: 6 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? 4 : 6 }}>
+              <Text style={{ fontFamily: 'Inter-Medium', fontSize: isMobile ? 11 : 12, color: '#9E9189' }}>Gross Inflow</Text>
+              <TrendingUp size={isMobile ? 14 : 16} color="#2E7D32" />
             </View>
-            <Text style={{ fontFamily: 'Inter-Bold', fontSize: 24, color: '#2E7D32' }}>
+            <Text style={{ fontFamily: 'Inter-Bold', fontSize: isMobile ? 18 : 24, color: '#2E7D32' }}>
               ₹{stats.income.toLocaleString('en-IN')}
             </Text>
           </View>
 
-          <View style={{ flex: 1, minWidth: 160, backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: 'rgba(62,39,35,0.06)', shadowColor: '#3E2723', shadowOpacity: 0.03, shadowRadius: 6 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-              <Text style={{ fontFamily: 'Inter-Medium', fontSize: 12, color: '#9E9189' }}>Gross Outflow (Costs)</Text>
-              <TrendingDown size={16} color="#D32F2F" />
+          <View style={{ width: isMobile ? '47%' : undefined, flex: isMobile ? 1 : 1, minWidth: isMobile ? '45%' : 160, backgroundColor: '#FFFFFF', borderRadius: isMobile ? 14 : 16, padding: isMobile ? 12 : 16, borderWidth: 1, borderColor: 'rgba(62,39,35,0.06)', shadowColor: '#3E2723', shadowOpacity: 0.03, shadowRadius: 6 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? 4 : 6 }}>
+              <Text style={{ fontFamily: 'Inter-Medium', fontSize: isMobile ? 11 : 12, color: '#9E9189' }}>Gross Outflow</Text>
+              <TrendingDown size={isMobile ? 14 : 16} color="#D32F2F" />
             </View>
-            <Text style={{ fontFamily: 'Inter-Bold', fontSize: 24, color: '#D32F2F' }}>
+            <Text style={{ fontFamily: 'Inter-Bold', fontSize: isMobile ? 18 : 24, color: '#D32F2F' }}>
               ₹{stats.expense.toLocaleString('en-IN')}
             </Text>
           </View>
 
-          <View style={{ flex: 1, minWidth: 160, backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: 'rgba(62,39,35,0.06)', shadowColor: '#3E2723', shadowOpacity: 0.03, shadowRadius: 6 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-              <Text style={{ fontFamily: 'Inter-Medium', fontSize: 12, color: '#9E9189' }}>Net Ecosystem</Text>
-              <Wallet size={16} color={stats.net >= 0 ? '#2E7D32' : '#D32F2F'} />
+          <View style={{ width: isMobile ? '47%' : undefined, flex: isMobile ? 1 : 1, minWidth: isMobile ? '45%' : 160, backgroundColor: '#FFFFFF', borderRadius: isMobile ? 14 : 16, padding: isMobile ? 12 : 16, borderWidth: 1, borderColor: 'rgba(62,39,35,0.06)', shadowColor: '#3E2723', shadowOpacity: 0.03, shadowRadius: 6 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? 4 : 6 }}>
+              <Text style={{ fontFamily: 'Inter-Medium', fontSize: isMobile ? 11 : 12, color: '#9E9189' }}>Net Ecosystem</Text>
+              <Wallet size={isMobile ? 14 : 16} color={stats.net >= 0 ? '#2E7D32' : '#D32F2F'} />
             </View>
             <Text
               style={{
                 fontFamily: 'Inter-Bold',
-                fontSize: 24,
+                fontSize: isMobile ? 18 : 24,
                 color: stats.net >= 0 ? '#2E7D32' : '#D32F2F',
               }}
             >
@@ -349,7 +350,7 @@ export default function AdminTransactionsScreen() {
                       borderWidth: 1,
                       borderColor: 'rgba(62,39,35,0.06)',
                       padding: 18,
-                      height: '100%',
+                      height: Platform.OS === 'web' ? '100%' : undefined,
                       minHeight: 190,
                       display: 'flex',
                       flexDirection: 'column',

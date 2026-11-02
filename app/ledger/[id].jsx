@@ -9,6 +9,7 @@ import {
   Pressable,
   Platform,
   Linking,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -29,6 +30,8 @@ import {
 import Animated, { FadeInUp } from 'react-native-reanimated';
 
 export default function TransactionDetailsScreen() {
+  const { width } = useWindowDimensions();
+  const isMobile = width < 640;
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const { data: tx, isLoading } = useTransaction(id);
@@ -84,25 +87,25 @@ export default function TransactionDetailsScreen() {
         contentContainerClassName="w-full px-5 md:px-8 lg:px-10 xl:px-12 pt-6"
       >
         {/* Top Header Banner */}
-        <View className="flex-row items-center justify-between mb-8 pb-5 border-b border-soil/5">
-          <View className="flex-row items-center gap-3">
+        <View style={{ flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center', justifyContent: 'space-between', gap: 14, marginBottom: 24, paddingBottom: 18, borderBottomWidth: 1, borderBottomColor: 'rgba(62,39,35,0.06)' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
             <Pressable
               onPress={() => router.back()}
-              className="w-10 h-10 rounded-xl bg-surface items-center justify-center border border-soil/10 hover:bg-surface/80"
+              className="w-10 h-10 rounded-xl bg-surface items-center justify-center border border-soil/10 hover:bg-surface/80 shrink-0"
               hitSlop={8}
             >
               <ArrowLeft size={18} color="#3E2723" strokeWidth={2.2} />
             </Pressable>
-            <View>
-              <View className="flex-row items-center gap-3">
+            <View style={{ flex: 1, minWidth: 0 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                 <Text
-                  className="text-soil text-2xl lg:text-3xl font-bold"
-                  style={{ fontFamily: 'Inter-Bold' }}
+                  style={{ fontFamily: 'Inter-Bold', fontSize: isMobile ? 20 : 28, color: '#3E2723' }}
+                  numberOfLines={1}
                 >
                   Transaction Voucher
                 </Text>
                 <View
-                  className={`px-3 py-1 rounded-full ${
+                  className={`px-2.5 py-0.5 rounded-full ${
                     isIncome ? 'bg-leaf/10' : 'bg-clay/10'
                   }`}
                 >
@@ -119,6 +122,7 @@ export default function TransactionDetailsScreen() {
               <Text
                 className="text-soil-muted text-xs lg:text-sm mt-0.5"
                 style={{ fontFamily: 'Inter-Regular' }}
+                numberOfLines={1}
               >
                 Recorded on {tx.transaction_date} • Batch margin entry
               </Text>
@@ -127,13 +131,21 @@ export default function TransactionDetailsScreen() {
 
           <Pressable
             onPress={handleDelete}
-            className="flex-row items-center bg-clay/10 border border-clay/20 px-4 py-2.5 rounded-xl hover:bg-clay/20"
-            style={{ minHeight: 40 }}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: '#FFEBEE',
+              borderWidth: 1,
+              borderColor: 'rgba(211,47,47,0.2)',
+              paddingHorizontal: 14,
+              paddingVertical: 8,
+              borderRadius: 12,
+              alignSelf: isMobile ? 'flex-end' : 'auto',
+            }}
           >
-            <Trash2 size={16} color="#D32F2F" strokeWidth={2} />
+            <Trash2 size={15} color="#D32F2F" strokeWidth={2} />
             <Text
-              className="text-clay font-bold ml-2 text-sm"
-              style={{ fontFamily: 'Inter-Bold' }}
+              style={{ fontFamily: 'Inter-Bold', fontSize: 13, color: '#D32F2F', marginLeft: 6 }}
             >
               Delete Record
             </Text>
@@ -154,7 +166,7 @@ export default function TransactionDetailsScreen() {
                   shadowRadius: 8,
                 }}
               >
-                <View className="flex-row items-center justify-between pb-6 border-b border-soil/5 mb-6">
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingBottom: 20, borderBottomWidth: 1, borderBottomColor: 'rgba(62,39,35,0.06)', marginBottom: 20 }}>
                   <View className="flex-row items-center gap-4">
                     <View
                       className={`w-14 h-14 rounded-2xl items-center justify-center ${

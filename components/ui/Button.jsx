@@ -4,14 +4,18 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
+
 export function Button({
   label,
   variant = 'primary',
   icon,
   className,
   disabled,
+  containerStyle,
+  textStyle,
   onPressIn: onPressInProp,
   onPressOut: onPressOutProp,
+  style,
   ...props
 }) {
   const scale = useSharedValue(1);
@@ -31,9 +35,10 @@ export function Button({
     danger: 'text-white',
   };
   return (
-    <Animated.View style={animatedStyle}>
+    <Animated.View style={[animatedStyle, containerStyle]}>
       <TouchableOpacity
         className={`${baseStyle} ${variants[variant]} ${className || ''}`}
+        style={style}
         activeOpacity={0.9}
         disabled={disabled}
         accessible={true}
@@ -54,7 +59,8 @@ export function Button({
         {!!label && (
           <Text
             className={`${textColors[variant]} font-medium ${icon ? 'ml-2' : ''}`}
-            style={{ fontFamily: 'Inter-Medium', fontSize: 16 }}
+            style={[{ fontFamily: 'Inter-Medium', fontSize: 15 }, textStyle]}
+            numberOfLines={1}
           >
             {label}
           </Text>

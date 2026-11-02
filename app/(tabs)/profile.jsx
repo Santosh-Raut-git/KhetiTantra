@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Alert, ScrollView, Pressable, Platform } from 'react-native';
+import { View, Text, Alert, ScrollView, Pressable, Platform, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { supabase, supabasePublic } from '@/lib/supabase';
@@ -21,6 +21,8 @@ export default function ProfileScreen() {
   const [district, setDistrict] = useState('');
   const [landArea, setLandArea] = useState('');
   const { data: isAdmin } = useIsAdmin();
+  const { width } = useWindowDimensions();
+  const isDesktop = width >= 1024;
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -124,10 +126,10 @@ export default function ProfileScreen() {
   const isRetailer = userRole === 'retailer';
 
   return (
-    <SafeAreaView className="flex-1 bg-sand" edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#F5F5F0' }} edges={['top']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 60, width: '100%' }}
+        contentContainerStyle={{ paddingBottom: 80, paddingHorizontal: width >= 768 ? 32 : 16, paddingTop: 20, flexGrow: 1 }}
         contentContainerClassName="w-full px-5 md:px-8 lg:px-10 xl:px-12 pt-6"
       >
         {/* Desktop Header Banner */}
@@ -166,77 +168,178 @@ export default function ProfileScreen() {
 
         {/* 2-Column Desktop SaaS Layout */}
         <View className="flex-col lg:flex-row gap-8 items-start">
-          {/* Left Column: User Card & Sign Out (~340px) */}
-          <View className="w-full lg:w-80 shrink-0 flex-col gap-6">
-            <Animated.View entering={ZoomIn.duration(400)}>
+          {/* Left Column: User Card & Sign Out */}
+          {isDesktop ? (
+            <View className="w-full lg:w-80 shrink-0 flex-col gap-6">
+              <Animated.View entering={ZoomIn.duration(400)}>
+                <View
+                  className="bg-surface rounded-2xl p-6 border border-soil/5 shadow-sm items-center text-center"
+                  style={{
+                    shadowColor: '#3E2723',
+                    shadowOpacity: 0.04,
+                    shadowRadius: 8,
+                  }}
+                >
+                  <View className="w-24 h-24 rounded-full bg-leaf/10 items-center justify-center mb-4 border-2 border-leaf/20">
+                    <User size={44} color="#2E7D32" strokeWidth={1.6} />
+                  </View>
+
+                  <Text
+                    className="text-soil text-xl font-bold mb-1"
+                    style={{ fontFamily: 'Inter-Bold' }}
+                  >
+                    {profile?.full_name || fullName || 'KhetiTantra User'}
+                  </Text>
+
+                  <Text
+                    className="text-soil-muted text-xs mb-3"
+                    style={{ fontFamily: 'Inter-Regular' }}
+                  >
+                    {session?.user?.email}
+                  </Text>
+
+                  <View className="flex-row items-center bg-leaf/10 px-3 py-1 rounded-full border border-leaf/15 mb-4">
+                    <CheckCircle2 size={13} color="#2E7D32" />
+                    <Text
+                      className="text-leaf text-xs capitalize font-semibold ml-1.5"
+                      style={{ fontFamily: 'Inter-Medium' }}
+                    >
+                      {userRole} Account
+                    </Text>
+                  </View>
+
+                  {/* Metadata summary */}
+                  <View className="w-full pt-4 border-t border-soil/5 space-y-2">
+                    <View className="flex-row items-center justify-between text-xs py-1">
+                      <Text className="text-soil-muted text-xs" style={{ fontFamily: 'Inter-Regular' }}>
+                        Status
+                      </Text>
+                      <Text className="text-leaf text-xs font-semibold" style={{ fontFamily: 'Inter-Medium' }}>
+                        Active
+                      </Text>
+                    </View>
+                    <View className="flex-row items-center justify-between text-xs py-1">
+                      <Text className="text-soil-muted text-xs" style={{ fontFamily: 'Inter-Regular' }}>
+                        Location
+                      </Text>
+                      <Text className="text-soil text-xs font-medium" style={{ fontFamily: 'Inter-Medium' }}>
+                        {profile?.district ? `${profile.district}` : 'Not set'}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </Animated.View>
+
+              {/* Sign Out Card */}
+              <View className="bg-surface rounded-2xl p-4 border border-soil/5 shadow-xs">
+                <Button
+                  label="Sign Out"
+                  variant="secondary"
+                  icon={<LogOut size={17} color="#3E2723" />}
+                  onPress={signOut}
+                />
+              </View>
+            </View>
+          ) : (
+            /* Sleek Compact Mobile Profile Card */
+            <View style={{ width: '100%', marginBottom: 8 }}>
               <View
-                className="bg-surface rounded-2xl p-6 border border-soil/5 shadow-sm items-center text-center"
                 style={{
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: 16,
+                  padding: 14,
+                  borderWidth: 1,
+                  borderColor: 'rgba(62,39,35,0.06)',
                   shadowColor: '#3E2723',
                   shadowOpacity: 0.04,
                   shadowRadius: 8,
+                  shadowOffset: { width: 0, height: 2 },
                 }}
               >
-                <View className="w-24 h-24 rounded-full bg-leaf/10 items-center justify-center mb-4 border-2 border-leaf/20">
-                  <User size={44} color="#2E7D32" strokeWidth={1.6} />
-                </View>
-
-                <Text
-                  className="text-soil text-xl font-bold mb-1"
-                  style={{ fontFamily: 'Inter-Bold' }}
-                >
-                  {profile?.full_name || fullName || 'KhetiTantra User'}
-                </Text>
-
-                <Text
-                  className="text-soil-muted text-xs mb-3"
-                  style={{ fontFamily: 'Inter-Regular' }}
-                >
-                  {session?.user?.email}
-                </Text>
-
-                <View className="flex-row items-center bg-leaf/10 px-3 py-1 rounded-full border border-leaf/15 mb-4">
-                  <CheckCircle2 size={13} color="#2E7D32" />
-                  <Text
-                    className="text-leaf text-xs capitalize font-semibold ml-1.5"
-                    style={{ fontFamily: 'Inter-Medium' }}
-                  >
-                    {userRole} Account
-                  </Text>
-                </View>
-
-                {/* Metadata summary */}
-                <View className="w-full pt-4 border-t border-soil/5 space-y-2">
-                  <View className="flex-row items-center justify-between text-xs py-1">
-                    <Text className="text-soil-muted text-xs" style={{ fontFamily: 'Inter-Regular' }}>
-                      Status
-                    </Text>
-                    <Text className="text-leaf text-xs font-semibold" style={{ fontFamily: 'Inter-Medium' }}>
-                      Active
-                    </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, marginRight: 10 }}>
+                    <View
+                      style={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: 22,
+                        backgroundColor: '#E8F5E9',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderWidth: 1.5,
+                        borderColor: 'rgba(46,125,50,0.2)',
+                        marginRight: 10,
+                      }}
+                    >
+                      <User size={22} color="#2E7D32" strokeWidth={1.8} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                        <Text
+                          style={{ fontFamily: 'Inter-Bold', fontSize: 16, color: '#3E2723' }}
+                          numberOfLines={1}
+                        >
+                          {profile?.full_name || fullName || 'KhetiTantra User'}
+                        </Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#E8F5E9', paddingHorizontal: 6, paddingVertical: 1.5, borderRadius: 8 }}>
+                          <CheckCircle2 size={10} color="#2E7D32" />
+                          <Text style={{ fontFamily: 'Inter-Medium', fontSize: 10, color: '#2E7D32', marginLeft: 3, textTransform: 'capitalize' }}>
+                            {userRole}
+                          </Text>
+                        </View>
+                      </View>
+                      <Text style={{ fontFamily: 'Inter-Regular', fontSize: 12, color: '#9E9189', marginTop: 1 }} numberOfLines={1}>
+                        {session?.user?.email}
+                      </Text>
+                    </View>
                   </View>
-                  <View className="flex-row items-center justify-between text-xs py-1">
-                    <Text className="text-soil-muted text-xs" style={{ fontFamily: 'Inter-Regular' }}>
-                      Location
+
+                  <Pressable
+                    onPress={signOut}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      backgroundColor: '#FFEBEE',
+                      paddingHorizontal: 11,
+                      paddingVertical: 7,
+                      borderRadius: 10,
+                      borderWidth: 1,
+                      borderColor: 'rgba(211,47,47,0.25)',
+                    }}
+                  >
+                    <LogOut size={13} color="#D32F2F" strokeWidth={2.2} />
+                    <Text style={{ fontFamily: 'Inter-Bold', fontSize: 11, color: '#D32F2F', marginLeft: 4 }}>
+                      Sign Out
                     </Text>
-                    <Text className="text-soil text-xs font-medium" style={{ fontFamily: 'Inter-Medium' }}>
-                      {profile?.district ? `${profile.district}` : 'Not set'}
+                  </Pressable>
+                </View>
+
+                {/* Compact Status & Location Strip */}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginTop: 10,
+                    paddingTop: 8,
+                    borderTopWidth: 1,
+                    borderTopColor: 'rgba(62,39,35,0.05)',
+                  }}
+                >
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                    <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#2E7D32' }} />
+                    <Text style={{ fontFamily: 'Inter-Medium', fontSize: 11, color: '#2E7D32' }}>Active</Text>
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                    <MapPin size={11} color="#9E9189" />
+                    <Text style={{ fontFamily: 'Inter-Regular', fontSize: 11, color: '#6D4C41' }}>
+                      {profile?.district ? profile.district : 'Location not set'}
                     </Text>
                   </View>
                 </View>
               </View>
-            </Animated.View>
-
-            {/* Sign Out Card */}
-            <View className="bg-surface rounded-2xl p-4 border border-soil/5 shadow-xs">
-              <Button
-                label="Sign Out"
-                variant="secondary"
-                icon={<LogOut size={17} color="#3E2723" />}
-                onPress={signOut}
-              />
             </View>
-          </View>
+          )}
 
           {/* Right Column: Editable Information Form */}
           <View className="flex-1 w-full">

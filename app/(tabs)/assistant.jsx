@@ -8,6 +8,7 @@ import {
   Platform,
   Pressable,
   ActivityIndicator,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Markdown from 'react-native-markdown-display';
@@ -241,67 +242,71 @@ export default function AssistantScreen() {
     );
   };
 
+  const { width } = useWindowDimensions();
+  const isMobile = width < 640;
+
   return (
-    <View style={{ flex: 1, backgroundColor: '#F5F5F0', display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-      {/* SaaS Chat Top Header Bar */}
-      <View
-        style={{
-          backgroundColor: '#FFFFFF',
-          borderBottomWidth: 1,
-          borderBottomColor: 'rgba(62,39,35,0.08)',
-          paddingHorizontal: 24,
-          paddingVertical: 14,
-          shadowColor: '#3E2723',
-          shadowOpacity: 0.02,
-          shadowRadius: 4,
-          zIndex: 10,
-        }}
-      >
-        <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <View
-              style={{
-                width: 42,
-                height: 42,
-                borderRadius: 14,
-                backgroundColor: '#E8F5E9',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginRight: 12,
-                borderWidth: 1,
-                borderColor: 'rgba(46,125,50,0.15)',
-              }}
-            >
-              <Bot size={22} color="#2E7D32" strokeWidth={2} />
-            </View>
-            <View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <Text style={{ fontFamily: 'Inter-Bold', fontSize: 18, color: '#3E2723' }}>
-                  Kheti AI
-                </Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(46,125,50,0.08)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999 }}>
-                  <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#2E7D32', marginRight: 5 }} />
-                  <Text style={{ fontFamily: 'Inter-Medium', fontSize: 11, color: '#2E7D32' }}>
-                    Online
-                  </Text>
-                </View>
+    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
+      <View style={{ flex: 1, backgroundColor: '#F5F5F0', display: 'flex', flexDirection: 'column' }}>
+        {/* SaaS Chat Top Header Bar */}
+        <View
+          style={{
+            backgroundColor: '#FFFFFF',
+            borderBottomWidth: 1,
+            borderBottomColor: 'rgba(62,39,35,0.08)',
+            paddingHorizontal: isMobile ? 14 : 24,
+            paddingVertical: isMobile ? 10 : 14,
+            shadowColor: '#3E2723',
+            shadowOpacity: 0.02,
+            shadowRadius: 4,
+            zIndex: 10,
+          }}
+        >
+          <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, marginRight: 8 }}>
+              <View
+                style={{
+                  width: isMobile ? 38 : 42,
+                  height: isMobile ? 38 : 42,
+                  borderRadius: isMobile ? 12 : 14,
+                  backgroundColor: '#E8F5E9',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: 10,
+                  borderWidth: 1,
+                  borderColor: 'rgba(46,125,50,0.15)',
+                }}
+              >
+                <Bot size={isMobile ? 20 : 22} color="#2E7D32" strokeWidth={2} />
               </View>
-              <Text style={{ fontFamily: 'Inter-Regular', fontSize: 12, color: '#9E9189', marginTop: 1 }}>
-                {isRetailer ? 'Procurement & Wholesale Market Specialist' : 'Personal Agronomist & Crop Specialist'}
+              <View style={{ flex: 1 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                  <Text style={{ fontFamily: 'Inter-Bold', fontSize: isMobile ? 16 : 18, color: '#3E2723' }}>
+                    Kheti AI
+                  </Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(46,125,50,0.08)', paddingHorizontal: 7, paddingVertical: 1.5, borderRadius: 999 }}>
+                    <View style={{ width: 5, height: 5, borderRadius: 2.5, backgroundColor: '#2E7D32', marginRight: 4 }} />
+                    <Text style={{ fontFamily: 'Inter-Medium', fontSize: 10, color: '#2E7D32' }}>
+                      Online
+                    </Text>
+                  </View>
+                </View>
+                <Text style={{ fontFamily: 'Inter-Regular', fontSize: isMobile ? 11 : 12, color: '#9E9189', marginTop: 1 }} numberOfLines={1}>
+                  {isRetailer ? 'Procurement & Wholesale Market Specialist' : 'Personal Agronomist & Crop Specialist'}
+                </Text>
+              </View>
+            </View>
+
+            <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F5F5F0', paddingHorizontal: isMobile ? 8 : 12, paddingVertical: isMobile ? 5 : 6, borderRadius: 10, borderWidth: 1, borderColor: 'rgba(62,39,35,0.06)' }}>
+              <Sparkles size={isMobile ? 12 : 14} color="#2E7D32" />
+              <Text style={{ fontFamily: 'Inter-Medium', fontSize: isMobile ? 11 : 12, color: '#6D4C41', marginLeft: 4 }}>
+                {isMobile ? 'Gemini' : 'Gemini Powered'}
               </Text>
             </View>
           </View>
-
-          <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F5F5F0', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10, borderWidth: 1, borderColor: 'rgba(62,39,35,0.06)' }}>
-            <Sparkles size={14} color="#2E7D32" />
-            <Text style={{ fontFamily: 'Inter-Medium', fontSize: 12, color: '#6D4C41', marginLeft: 6 }}>
-              Gemini Powered
-            </Text>
-          </View>
         </View>
-      </View>
 
-      {/* Main Conversation Stream */}
+        {/* Main Conversation Stream */}
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
@@ -547,20 +552,10 @@ export default function AssistantScreen() {
               </Animated.View>
             </View>
 
-            <Text
-              style={{
-                fontFamily: 'Inter-Regular',
-                fontSize: 11,
-                color: '#9E9189',
-                textAlign: 'center',
-                marginTop: 8,
-              }}
-            >
-              Kheti AI provides insights based on agricultural knowledge bases. Verify chemical application rates with certified local authorities.
-            </Text>
           </View>
         </View>
       </KeyboardAvoidingView>
-    </View>
+      </View>
+    </SafeAreaView>
   );
 }

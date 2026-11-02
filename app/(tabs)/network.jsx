@@ -9,6 +9,7 @@ import {
   Linking,
   Modal,
   useWindowDimensions,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -71,7 +72,7 @@ function GrowerCard({ grower, index, onSelect, onCall, cardWidth }) {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          height: '100%',
+          height: Platform.OS === 'web' ? '100%' : undefined,
           minHeight: 230,
           shadowColor: '#3E2723',
           shadowOpacity: 0.04,
@@ -255,6 +256,7 @@ export default function NetworkScreen() {
   const { data, isLoading, error, refetch } = useGrowers();
   const { width } = useWindowDimensions();
 
+  const isMobile = width < 640;
   const numColumns = width >= 1440 ? 4 : width >= 1024 ? 3 : width >= 640 ? 2 : 1;
   const cardWidth = `${100 / numColumns}%`;
 
@@ -290,15 +292,18 @@ export default function NetworkScreen() {
       return;
     }
     const cleanPhone = phoneNumber.replace(/[^0-9+]/g, '');
-    Linking.openURL(`tel:${cleanPhone}`).catch(() => {
-      // If tel: fails (e.g. desktop web), copy to clipboard
+    if (Platform.OS === 'web') {
       if (typeof navigator !== 'undefined' && navigator.clipboard) {
         navigator.clipboard.writeText(cleanPhone);
-        showToast(`Phone ${cleanPhone} copied to clipboard!`, 'success');
+        showToast(`Grower phone ${cleanPhone} copied to clipboard!`, 'success');
       } else {
-        showToast(`Contact: ${cleanPhone}`, 'info');
+        showToast(`Grower phone: ${cleanPhone}`, 'info');
       }
-    });
+    } else {
+      Linking.openURL(`tel:${cleanPhone}`).catch(() => {
+        showToast(`Contact: ${cleanPhone}`, 'info');
+      });
+    }
   };
 
   const handleCopyPhone = (phoneNumber) => {
@@ -339,10 +344,10 @@ export default function NetworkScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-sand" edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#F5F5F0' }} edges={['top']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 60, width: '100%' }}
+        contentContainerStyle={{ paddingBottom: 80, paddingHorizontal: width >= 768 ? 32 : 16, paddingTop: 20, flexGrow: 1 }}
         contentContainerClassName="w-full px-5 md:px-8 lg:px-10 xl:px-12 pt-6"
       >
         {/* Desktop Header Banner */}
@@ -392,14 +397,15 @@ export default function NetworkScreen() {
         </View>
 
         {/* 4 Overview Metric Cards */}
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 16, marginBottom: 30 }}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: isMobile ? 10 : 16, marginBottom: isMobile ? 18 : 30 }}>
           <View
             style={{
-              flex: 1,
-              minWidth: 160,
+              width: isMobile ? '47%' : undefined,
+              flex: isMobile ? 1 : 1,
+              minWidth: isMobile ? '45%' : 160,
               backgroundColor: '#FFFFFF',
-              borderRadius: 18,
-              padding: 20,
+              borderRadius: isMobile ? 14 : 18,
+              padding: isMobile ? 12 : 20,
               borderWidth: 1,
               borderColor: 'rgba(62,39,35,0.06)',
               shadowColor: '#3E2723',
@@ -407,26 +413,27 @@ export default function NetworkScreen() {
               shadowRadius: 8,
             }}
           >
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-              <Text style={{ fontFamily: 'Inter-Medium', fontSize: 12, color: '#9E9189' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? 6 : 10 }}>
+              <Text style={{ fontFamily: 'Inter-Medium', fontSize: isMobile ? 11 : 12, color: '#9E9189' }}>
                 Verified Growers
               </Text>
-              <View style={{ width: 34, height: 34, borderRadius: 10, backgroundColor: '#E8F5E9', alignItems: 'center', justifyContent: 'center' }}>
-                <Users size={18} color="#2E7D32" strokeWidth={2} />
+              <View style={{ width: isMobile ? 28 : 34, height: isMobile ? 28 : 34, borderRadius: 10, backgroundColor: '#E8F5E9', alignItems: 'center', justifyContent: 'center' }}>
+                <Users size={isMobile ? 15 : 18} color="#2E7D32" strokeWidth={2} />
               </View>
             </View>
-            <Text style={{ fontFamily: 'Inter-Bold', fontSize: 24, color: '#2E7D32' }}>
+            <Text style={{ fontFamily: 'Inter-Bold', fontSize: isMobile ? 20 : 24, color: '#2E7D32' }}>
               {growers.length}
             </Text>
           </View>
 
           <View
             style={{
-              flex: 1,
-              minWidth: 160,
+              width: isMobile ? '47%' : undefined,
+              flex: isMobile ? 1 : 1,
+              minWidth: isMobile ? '45%' : 160,
               backgroundColor: '#FFFFFF',
-              borderRadius: 18,
-              padding: 20,
+              borderRadius: isMobile ? 14 : 18,
+              padding: isMobile ? 12 : 20,
               borderWidth: 1,
               borderColor: 'rgba(62,39,35,0.06)',
               shadowColor: '#3E2723',
@@ -434,26 +441,27 @@ export default function NetworkScreen() {
               shadowRadius: 8,
             }}
           >
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-              <Text style={{ fontFamily: 'Inter-Medium', fontSize: 12, color: '#9E9189' }}>
-                Total Farm Acreage
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? 6 : 10 }}>
+              <Text style={{ fontFamily: 'Inter-Medium', fontSize: isMobile ? 11 : 12, color: '#9E9189' }}>
+                Farm Acreage
               </Text>
-              <View style={{ width: 34, height: 34, borderRadius: 10, backgroundColor: '#FFF8E1', alignItems: 'center', justifyContent: 'center' }}>
-                <Sprout size={18} color="#F57F17" strokeWidth={2} />
+              <View style={{ width: isMobile ? 28 : 34, height: isMobile ? 28 : 34, borderRadius: 10, backgroundColor: '#FFF8E1', alignItems: 'center', justifyContent: 'center' }}>
+                <Sprout size={isMobile ? 15 : 18} color="#F57F17" strokeWidth={2} />
               </View>
             </View>
-            <Text style={{ fontFamily: 'Inter-Bold', fontSize: 24, color: '#3E2723' }}>
-              {totalAcreage.toFixed(0)} <Text style={{ fontSize: 14, fontFamily: 'Inter-Regular', color: '#9E9189' }}>Acres</Text>
+            <Text style={{ fontFamily: 'Inter-Bold', fontSize: isMobile ? 20 : 24, color: '#3E2723' }}>
+              {totalAcreage.toFixed(0)} <Text style={{ fontSize: isMobile ? 11 : 14, fontFamily: 'Inter-Regular', color: '#9E9189' }}>Acres</Text>
             </Text>
           </View>
 
           <View
             style={{
-              flex: 1,
-              minWidth: 160,
+              width: isMobile ? '47%' : undefined,
+              flex: isMobile ? 1 : 1,
+              minWidth: isMobile ? '45%' : 160,
               backgroundColor: '#FFFFFF',
-              borderRadius: 18,
-              padding: 20,
+              borderRadius: isMobile ? 14 : 18,
+              padding: isMobile ? 12 : 20,
               borderWidth: 1,
               borderColor: 'rgba(62,39,35,0.06)',
               shadowColor: '#3E2723',
@@ -461,26 +469,27 @@ export default function NetworkScreen() {
               shadowRadius: 8,
             }}
           >
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-              <Text style={{ fontFamily: 'Inter-Medium', fontSize: 12, color: '#9E9189' }}>
-                Districts Covered
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? 6 : 10 }}>
+              <Text style={{ fontFamily: 'Inter-Medium', fontSize: isMobile ? 11 : 12, color: '#9E9189' }}>
+                Districts
               </Text>
-              <View style={{ width: 34, height: 34, borderRadius: 10, backgroundColor: '#E3F2FD', alignItems: 'center', justifyContent: 'center' }}>
-                <MapPin size={18} color="#1565C0" strokeWidth={2} />
+              <View style={{ width: isMobile ? 28 : 34, height: isMobile ? 28 : 34, borderRadius: 10, backgroundColor: '#E3F2FD', alignItems: 'center', justifyContent: 'center' }}>
+                <MapPin size={isMobile ? 15 : 18} color="#1565C0" strokeWidth={2} />
               </View>
             </View>
-            <Text style={{ fontFamily: 'Inter-Bold', fontSize: 24, color: '#1565C0' }}>
+            <Text style={{ fontFamily: 'Inter-Bold', fontSize: isMobile ? 20 : 24, color: '#1565C0' }}>
               {districts.length}
             </Text>
           </View>
 
           <View
             style={{
-              flex: 1,
-              minWidth: 160,
+              width: isMobile ? '47%' : undefined,
+              flex: isMobile ? 1 : 1,
+              minWidth: isMobile ? '45%' : 160,
               backgroundColor: '#FFFFFF',
-              borderRadius: 18,
-              padding: 20,
+              borderRadius: isMobile ? 14 : 18,
+              padding: isMobile ? 12 : 20,
               borderWidth: 1,
               borderColor: 'rgba(62,39,35,0.06)',
               shadowColor: '#3E2723',
@@ -488,15 +497,15 @@ export default function NetworkScreen() {
               shadowRadius: 8,
             }}
           >
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-              <Text style={{ fontFamily: 'Inter-Medium', fontSize: 12, color: '#9E9189' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? 6 : 10 }}>
+              <Text style={{ fontFamily: 'Inter-Medium', fontSize: isMobile ? 11 : 12, color: '#9E9189' }}>
                 Active Market Lots
               </Text>
-              <View style={{ width: 34, height: 34, borderRadius: 10, backgroundColor: '#E8F5E9', alignItems: 'center', justifyContent: 'center' }}>
-                <Store size={18} color="#2E7D32" strokeWidth={2} />
+              <View style={{ width: isMobile ? 28 : 34, height: isMobile ? 28 : 34, borderRadius: 10, backgroundColor: '#E8F5E9', alignItems: 'center', justifyContent: 'center' }}>
+                <Store size={isMobile ? 15 : 18} color="#2E7D32" strokeWidth={2} />
               </View>
             </View>
-            <Text style={{ fontFamily: 'Inter-Bold', fontSize: 24, color: '#2E7D32' }}>
+            <Text style={{ fontFamily: 'Inter-Bold', fontSize: isMobile ? 20 : 24, color: '#2E7D32' }}>
               {totalLots}
             </Text>
           </View>
@@ -546,9 +555,9 @@ export default function NetworkScreen() {
           </View>
 
           {/* Filter Pills Rows */}
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+          <View style={{ flexDirection: 'column', gap: 12 }}>
             {/* Districts filter */}
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
               <Text style={{ fontFamily: 'Inter-Medium', fontSize: 12, color: '#9E9189', marginRight: 4 }}>
                 District:
               </Text>
@@ -887,7 +896,7 @@ export default function NetworkScreen() {
                   >
                     <Phone size={16} color="#FFFFFF" strokeWidth={2.2} />
                     <Text style={{ fontFamily: 'Inter-Bold', color: '#FFFFFF', fontSize: 14 }}>
-                      Call Farmer
+                      {Platform.OS === 'web' ? 'Call / Copy Phone' : 'Call Farmer'}
                     </Text>
                   </Pressable>
                 )}
@@ -895,7 +904,6 @@ export default function NetworkScreen() {
                 <Pressable
                   onPress={() => {
                     setActiveModalGrower(null);
-                    showToast('Inquiry drafted! You can connect with this grower.', 'success');
                   }}
                   style={{
                     flex: 1,

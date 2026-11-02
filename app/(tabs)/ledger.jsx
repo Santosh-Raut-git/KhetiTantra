@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Image,
   useWindowDimensions,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -50,7 +51,7 @@ function TransactionCard({ tx, index, onPress, cardWidth }) {
           shadowOpacity: 0.04,
           shadowRadius: 8,
           shadowOffset: { width: 0, height: 2 },
-          height: '100%',
+          height: Platform.OS === 'web' ? '100%' : undefined,
           minHeight: 88,
         }}
       >
@@ -138,6 +139,7 @@ export default function LedgerScreen() {
   const [filterCrop, setFilterCrop] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
 
+  const isMobile = width < 640;
   const numColumns = width >= 1440 ? 3 : width >= 800 ? 2 : 1;
   const cardWidth = `${100 / numColumns}%`;
 
@@ -188,10 +190,10 @@ export default function LedgerScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-sand" edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#F5F5F0' }} edges={['top']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 60, width: '100%' }}
+        contentContainerStyle={{ paddingBottom: 80, paddingHorizontal: width >= 768 ? 32 : 16, paddingTop: 20, flexGrow: 1 }}
         contentContainerClassName="w-full px-5 md:px-8 lg:px-10 xl:px-12 pt-6"
       >
         {/* Desktop Header Banner */}
@@ -227,54 +229,106 @@ export default function LedgerScreen() {
         </View>
 
         {/* 3 Summary Cards */}
-        <View className="flex-row flex-wrap gap-4 mb-6">
-          <Card className="flex-1 min-w-[160px] md:min-w-[220px]">
-            <View className="flex-row items-center justify-between mb-2">
-              <Text className="text-soil-muted text-xs" style={{ fontFamily: 'Inter-Medium' }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            gap: isMobile ? 10 : 16,
+            marginBottom: isMobile ? 18 : 24,
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: isMobile ? 14 : 16,
+              padding: isMobile ? 12 : 16,
+              borderWidth: 1,
+              borderColor: 'rgba(62,39,35,0.06)',
+              shadowColor: '#3E2723',
+              shadowOpacity: 0.04,
+              shadowRadius: 8,
+              shadowOffset: { width: 0, height: 2 },
+              width: isMobile ? '100%' : undefined,
+              flex: isMobile ? undefined : 1,
+              minWidth: isMobile ? '100%' : 160,
+            }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? 4 : 8 }}>
+              <Text style={{ fontFamily: 'Inter-Medium', fontSize: isMobile ? 11 : 12, color: '#9E9189' }}>
                 Net Balance
               </Text>
-              <View className="w-7 h-7 rounded-full bg-leaf/10 items-center justify-center">
-                <Wallet size={15} color="#2E7D32" />
+              <View style={{ width: isMobile ? 26 : 28, height: isMobile ? 26 : 28, borderRadius: 14, backgroundColor: '#E8F5E9', alignItems: 'center', justifyContent: 'center' }}>
+                <Wallet size={14} color="#2E7D32" />
               </View>
             </View>
             <Text
               style={{
                 fontFamily: 'Inter-Bold',
-                fontSize: 22,
+                fontSize: isMobile ? 20 : 22,
                 color: netProfit >= 0 ? '#2E7D32' : '#D32F2F',
               }}
             >
               {netProfit >= 0 ? '+' : ''}₹{netProfit.toLocaleString('en-IN')}
             </Text>
-          </Card>
+          </View>
 
-          <Card className="flex-1 min-w-[160px] md:min-w-[220px]">
-            <View className="flex-row items-center justify-between mb-2">
-              <Text className="text-soil-muted text-xs" style={{ fontFamily: 'Inter-Medium' }}>
+          <View
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: isMobile ? 14 : 16,
+              padding: isMobile ? 12 : 16,
+              borderWidth: 1,
+              borderColor: 'rgba(62,39,35,0.06)',
+              shadowColor: '#3E2723',
+              shadowOpacity: 0.04,
+              shadowRadius: 8,
+              shadowOffset: { width: 0, height: 2 },
+              width: isMobile ? '47%' : undefined,
+              flex: isMobile ? 1 : 1,
+              minWidth: isMobile ? '45%' : 160,
+            }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? 4 : 8 }}>
+              <Text style={{ fontFamily: 'Inter-Medium', fontSize: isMobile ? 11 : 12, color: '#9E9189' }}>
                 Total Income
               </Text>
-              <View className="w-7 h-7 rounded-full bg-leaf/10 items-center justify-center">
-                <TrendingUp size={15} color="#2E7D32" />
+              <View style={{ width: isMobile ? 26 : 28, height: isMobile ? 26 : 28, borderRadius: 14, backgroundColor: '#E8F5E9', alignItems: 'center', justifyContent: 'center' }}>
+                <TrendingUp size={14} color="#2E7D32" />
               </View>
             </View>
-            <Text style={{ fontFamily: 'Inter-Bold', fontSize: 22, color: '#2E7D32' }}>
+            <Text style={{ fontFamily: 'Inter-Bold', fontSize: isMobile ? 18 : 22, color: '#2E7D32' }}>
               ₹{totalIncome.toLocaleString('en-IN')}
             </Text>
-          </Card>
+          </View>
 
-          <Card className="flex-1 min-w-[160px] md:min-w-[220px]">
-            <View className="flex-row items-center justify-between mb-2">
-              <Text className="text-soil-muted text-xs" style={{ fontFamily: 'Inter-Medium' }}>
+          <View
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: isMobile ? 14 : 16,
+              padding: isMobile ? 12 : 16,
+              borderWidth: 1,
+              borderColor: 'rgba(62,39,35,0.06)',
+              shadowColor: '#3E2723',
+              shadowOpacity: 0.04,
+              shadowRadius: 8,
+              shadowOffset: { width: 0, height: 2 },
+              width: isMobile ? '47%' : undefined,
+              flex: isMobile ? 1 : 1,
+              minWidth: isMobile ? '45%' : 160,
+            }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? 4 : 8 }}>
+              <Text style={{ fontFamily: 'Inter-Medium', fontSize: isMobile ? 11 : 12, color: '#9E9189' }}>
                 Total Expenses
               </Text>
-              <View className="w-7 h-7 rounded-full bg-clay/10 items-center justify-center">
-                <TrendingDown size={15} color="#D32F2F" />
+              <View style={{ width: isMobile ? 26 : 28, height: isMobile ? 26 : 28, borderRadius: 14, backgroundColor: '#FCE4EC', alignItems: 'center', justifyContent: 'center' }}>
+                <TrendingDown size={14} color="#D32F2F" />
               </View>
             </View>
-            <Text style={{ fontFamily: 'Inter-Bold', fontSize: 22, color: '#D32F2F' }}>
+            <Text style={{ fontFamily: 'Inter-Bold', fontSize: isMobile ? 18 : 22, color: '#D32F2F' }}>
               ₹{totalExpense.toLocaleString('en-IN')}
             </Text>
-          </Card>
+          </View>
         </View>
 
         {/* Filters Toolbar */}
@@ -343,7 +397,7 @@ export default function LedgerScreen() {
                 <Pressable
                   onPress={() => router.push('/ledger/new')}
                   className="w-full border-2 border-dashed border-soil/15 rounded-2xl p-5 items-center justify-center bg-surface/40 hover:bg-surface hover:border-leaf/50 transition-all flex-row gap-3"
-                  style={{ height: '100%', minHeight: 88 }}
+                  style={{ minHeight: 88, height: Platform.OS === 'web' ? '100%' : undefined }}
                 >
                   <View className="w-10 h-10 rounded-xl bg-leaf/10 items-center justify-center">
                     <Plus size={20} color="#2E7D32" strokeWidth={2.2} />
