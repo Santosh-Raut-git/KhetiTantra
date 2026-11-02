@@ -249,7 +249,7 @@ export default function TabLayout() {
   if (!isLoading && !session) {
     return <Redirect href="/(auth)" />;
   }
-  
+
   const role = profile?.role || session?.user?.user_metadata?.role || 'farmer';
   const isRetailer = role === 'retailer';
   const isWideWeb = Platform.OS === 'web' && width >= 768;

@@ -320,11 +320,10 @@ export default function MarketplaceScreen() {
                 <Pressable
                   key={cat || 'all'}
                   onPress={() => setActiveCategory(cat)}
-                  className={`px-4 py-2 rounded-xl border ${
-                    isActive
-                      ? 'bg-leaf border-leaf'
-                      : 'bg-sand/60 border-soil/10'
-                  }`}
+                  className={`px-4 py-2 rounded-xl border ${isActive
+                    ? 'bg-leaf border-leaf'
+                    : 'bg-sand/60 border-soil/10'
+                    }`}
                 >
                   <Text
                     style={{

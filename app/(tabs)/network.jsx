@@ -121,8 +121,8 @@ function GrowerCard({ grower, index, onSelect, onCall, cardWidth }) {
                   grower.scale === 'Commercial'
                     ? 'rgba(46,125,50,0.1)'
                     : grower.scale === 'Medium Scale'
-                    ? 'rgba(245,127,23,0.1)'
-                    : '#F5F5F0',
+                      ? 'rgba(245,127,23,0.1)'
+                      : '#F5F5F0',
                 paddingHorizontal: 8,
                 paddingVertical: 3,
                 borderRadius: 999,
@@ -136,8 +136,8 @@ function GrowerCard({ grower, index, onSelect, onCall, cardWidth }) {
                     grower.scale === 'Commercial'
                       ? '#2E7D32'
                       : grower.scale === 'Medium Scale'
-                      ? '#F57F17'
-                      : '#6D4C41',
+                        ? '#F57F17'
+                        : '#6D4C41',
                 }}
               >
                 {grower.scale}
