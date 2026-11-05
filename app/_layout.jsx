@@ -12,8 +12,11 @@ import {
   Inter_500Medium,
   Inter_700Bold,
 } from '@expo-google-fonts/inter';
-SplashScreen.preventAutoHideAsync();
+
+SplashScreen.preventAutoHideAsync().catch(() => {});
+
 const queryClient = new QueryClient();
+
 export default function RootLayout() {
   const { setSession, setProfile, setIsLoading } = useStore();
   const [fontsLoaded, fontError] = useFonts({
@@ -21,6 +24,7 @@ export default function RootLayout() {
     'Inter-Medium': Inter_500Medium,
     'Inter-Bold': Inter_700Bold,
   });
+
   useEffect(() => {
     async function syncUser(session) {
       setSession(session);
@@ -43,17 +47,26 @@ export default function RootLayout() {
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       syncUser(session);
+    }).catch((err) => {
+      console.warn('Auth session load error:', err);
+      setIsLoading(false);
     });
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       syncUser(session);
     });
+
     return () => subscription.unsubscribe();
   }, []);
+
   useEffect(() => {
-    if (fontsLoaded || fontError) SplashScreen.hideAsync();
+    if (fontsLoaded || fontError) {
+      SplashScreen.hideAsync().catch(() => {});
+    }
   }, [fontsLoaded, fontError]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
