@@ -9,7 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Plus, Sprout, ChevronRight, CheckCircle2, Calendar, MapPin } from 'lucide-react-native';
+import { Plus, Sprout, ChevronRight, CheckCircle2, Calendar, MapPin, Sparkles } from 'lucide-react-native';
 import { useCrops, useCropProfits } from '@/lib/api/crops';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { useRouter } from 'expo-router';
@@ -198,19 +198,46 @@ export default function CropsScreen() {
             </Text>
           </View>
 
-          <Pressable
-            onPress={() => router.push('/crops/new')}
-            className="flex-row items-center justify-center bg-leaf px-5 py-3 rounded-xl shadow-sm hover:bg-leaf-dark self-start sm:self-auto"
-            style={{ minHeight: 44 }}
-          >
-            <Plus size={18} color="#FFFFFF" strokeWidth={2.2} />
-            <Text
-              className="text-white text-sm ml-2"
-              style={{ fontFamily: 'Inter-Bold' }}
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <Pressable
+              onPress={() => router.push('/crops/diagnose')}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#FFFFFF',
+                borderWidth: 1,
+                borderColor: 'rgba(46,125,50,0.25)',
+                paddingHorizontal: 16,
+                paddingVertical: 10,
+                borderRadius: 12,
+                minHeight: 44,
+                gap: 6,
+                shadowColor: '#3E2723',
+                shadowOpacity: 0.03,
+                shadowRadius: 5,
+              }}
             >
-              Add New Crop
-            </Text>
-          </Pressable>
+              <Sparkles size={16} color="#2E7D32" strokeWidth={2.2} />
+              <Text style={{ fontFamily: 'Inter-Bold', fontSize: 13, color: '#2E7D32' }}>
+                AI Crop Doctor
+              </Text>
+            </Pressable>
+
+            <Pressable
+              onPress={() => router.push('/crops/new')}
+              className="flex-row items-center justify-center bg-leaf px-5 py-3 rounded-xl shadow-sm hover:bg-leaf-dark self-start sm:self-auto"
+              style={{ minHeight: 44 }}
+            >
+              <Plus size={18} color="#FFFFFF" strokeWidth={2.2} />
+              <Text
+                className="text-white text-sm ml-2"
+                style={{ fontFamily: 'Inter-Bold' }}
+              >
+                Add New Crop
+              </Text>
+            </Pressable>
+          </View>
         </View>
 
         {/* 3 Overview Metric Cards */}

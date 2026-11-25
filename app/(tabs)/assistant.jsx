@@ -82,8 +82,7 @@ export default function AssistantScreen() {
 
     if (isUser) {
       return (
-        <Animated.View
-          entering={SlideInRight.duration(260)}
+        <View
           style={{
             alignSelf: 'flex-end',
             maxWidth: '75%',
@@ -114,14 +113,13 @@ export default function AssistantScreen() {
               {item.content}
             </Text>
           </View>
-        </Animated.View>
+        </View>
       );
     }
 
     // Assistant response card
     return (
-      <Animated.View
-        entering={SlideInLeft.duration(260)}
+      <View
         style={{
           alignSelf: 'flex-start',
           maxWidth: '85%',
@@ -238,7 +236,7 @@ export default function AssistantScreen() {
             {item.content}
           </Markdown>
         </View>
-      </Animated.View>
+      </View>
     );
   };
 

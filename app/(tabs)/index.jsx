@@ -733,6 +733,13 @@ export default function DashboardScreen() {
                 {!isRetailer ? (
                   <>
                     <QuickActionItem
+                      title="AI Crop Doctor"
+                      subtitle="Diagnose pests & leaf diseases"
+                      icon={<Sparkles size={20} color="#2E7D32" strokeWidth={2.2} />}
+                      iconBg="#E8F5E9"
+                      onPress={() => router.push('/crops/diagnose')}
+                    />
+                    <QuickActionItem
                       title="Add Crop"
                       subtitle="Start a new crop cycle"
                       icon={<Plus size={20} color="#2E7D32" strokeWidth={2.4} />}
@@ -752,6 +759,13 @@ export default function DashboardScreen() {
                       icon={<Store size={20} color="#F57F17" strokeWidth={2} />}
                       iconBg="#FFF8E1"
                       onPress={() => router.push('/marketplace/new')}
+                    />
+                    <QuickActionItem
+                      title="Sales & Orders"
+                      subtitle="Fulfill wholesale buyer orders"
+                      icon={<Package size={20} color="#2E7D32" strokeWidth={2} />}
+                      iconBg="#E8F5E9"
+                      onPress={() => router.push('/(tabs)/orders')}
                     />
                   </>
                 ) : (

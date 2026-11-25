@@ -27,6 +27,7 @@ import {
   CheckCircle2,
   AlertCircle,
   Clock,
+  Sparkles,
 } from 'lucide-react-native';
 import { getStatusColor, getStatusBg } from '@/lib/utils';
 import Animated, { FadeInUp } from 'react-native-reanimated';
@@ -124,7 +125,27 @@ export default function CropDetailsScreen() {
             </View>
           </View>
 
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, alignSelf: isMobile ? 'flex-end' : 'auto' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, alignSelf: isMobile ? 'flex-end' : 'auto', flexWrap: 'wrap' }}>
+            <Pressable
+              onPress={() => router.push(`/crops/diagnose?crop_id=${id}`)}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: '#FFFFFF',
+                borderWidth: 1,
+                borderColor: 'rgba(46,125,50,0.3)',
+                paddingHorizontal: 14,
+                paddingVertical: 8,
+                borderRadius: 12,
+                gap: 6,
+              }}
+            >
+              <Sparkles size={15} color="#2E7D32" strokeWidth={2} />
+              <Text style={{ fontFamily: 'Inter-Bold', fontSize: 13, color: '#2E7D32' }}>
+                Scan Health
+              </Text>
+            </Pressable>
+
             <Pressable
               onPress={() => router.push(`/crops/${id}/edit`)}
               style={{

@@ -270,21 +270,37 @@ export default function MarketplaceScreen() {
             </Text>
           </View>
 
-          {isFarmer && (
+          <View className="flex-row items-center gap-2.5 self-start sm:self-auto flex-wrap">
             <Pressable
-              onPress={() => router.push('/marketplace/new')}
-              className="flex-row items-center justify-center bg-leaf px-5 py-3 rounded-xl shadow-sm hover:bg-leaf-dark self-start sm:self-auto"
-              style={{ minHeight: 44 }}
+              onPress={() => router.push('/(tabs)/orders')}
+              className="flex-row items-center justify-center bg-sand border border-soil/15 px-4 py-2.5 rounded-xl hover:bg-sand/80"
+              style={{ minHeight: 42 }}
             >
-              <Plus size={18} color="#FFFFFF" strokeWidth={2.2} />
+              <Package size={16} color="#3E2723" strokeWidth={2} />
               <Text
-                className="text-white text-sm ml-2"
+                className="text-soil text-xs sm:text-sm font-bold ml-1.5"
                 style={{ fontFamily: 'Inter-Bold' }}
               >
-                List a Crop for Sale
+                {isFarmer ? 'Sales Orders' : 'Supply Orders'}
               </Text>
             </Pressable>
-          )}
+
+            {isFarmer && (
+              <Pressable
+                onPress={() => router.push('/marketplace/new')}
+                className="flex-row items-center justify-center bg-leaf px-4 py-2.5 rounded-xl shadow-sm hover:bg-leaf-dark"
+                style={{ minHeight: 42 }}
+              >
+                <Plus size={17} color="#FFFFFF" strokeWidth={2.2} />
+                <Text
+                  className="text-white text-xs sm:text-sm ml-1.5 font-bold"
+                  style={{ fontFamily: 'Inter-Bold' }}
+                >
+                  List a Crop for Sale
+                </Text>
+              </Pressable>
+            )}
+          </View>
         </View>
 
         {/* Search & Category Filter Toolbar */}
